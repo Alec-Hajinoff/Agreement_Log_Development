@@ -1,0 +1,14 @@
+{
+  "php.version": "8.2",
+  "zencoder.enableRepoIndexing": false,
+  "zencoder.shellTool.commandConfirmationPolicy": "alwaysAsk",
+  "zencoder.enableCodeLenses": false,
+  "zencoder.enableShellTool": false,
+  "zencoder.inlineSuggestions.enable": false,
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.editor.enableCodeActions": false,
+  "editor.inlineSuggest.enabled": false,
+}
