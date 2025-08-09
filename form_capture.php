@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 $servername = "127.0.0.1";
 $username = "root";
 $passwordServer = "";
-$dbname = "climate_bind";
+$dbname = "agreement_log";
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $passwordServer);
