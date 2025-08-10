@@ -22,6 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
+$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to encrypt the agreement text
+$encryption_key = $env['ENCRYPTION_KEY'];
+
 $servername = "127.0.0.1";
 $username = "root";
 $passwordServer = "";
@@ -50,26 +53,16 @@ try {
 
     $agreement_hash = hash('sha256', $agreement_text);
 
-    $sql = "INSERT INTO agreements (agreement_text, agreement_hash) VALUES (?, ?)";
+    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id) VALUES (AES_ENCRYPT(?, ?), ?, ?)"; // AES_DECRYPT() is a built-in MySQL function for encrypting/decrypting
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception('Failed to prepare agreement insert statement');
     }
 
     $stmt->bindParam(1, $agreement_text);
-    $stmt->bindParam(2, $agreement_hash);
-    $stmt->execute();
-
-    $agreement_id = $conn->lastInsertId();
-
-    $sql = "UPDATE users SET agreements_id = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception('Failed to prepare users update statement');
-    }
-
-    $stmt->bindParam(1, $agreement_id);
-    $stmt->bindParam(2, $id);
+    $stmt->bindParam(2, $encryption_key);
+    $stmt->bindParam(3, $agreement_hash);
+    $stmt->bindParam(4, $id);
     $stmt->execute();
 
     $conn->commit();
