@@ -6,6 +6,109 @@ import { captureAccountData } from "./ApiService";
 
 function AccountDataCapture() {
   const navigate = useNavigate();
+  const [textHash, setTextHash] = useState("");
+  const [formData, setFormData] = useState({
+    agreement_text: "",
+  });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    setTextHash("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const data = await captureAccountData(formData);
+      if (data.success) {
+        setTextHash(data.hash);
+        navigate("/DataSubmittedThenClaim");
+      } else {
+        setErrorMessage("Submission failed. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container text-center">
+      <div>
+        <p>
+          To comply with regulatory standards and ensure secure payouts, we
+          require some basic information during registration to help us verify
+          your identity and meet Know Your Customer (KYC) requirements. This
+          protects against fraud, enables responsible use of the service, and
+          ensures that any payouts reach the correct recipient. All information
+          is handled securely and in accordance with applicable data protection
+          laws.
+        </p>
+      </div>
+      <div className="d-flex justify-content-end mb-3">
+        <LogoutComponent />
+      </div>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group mb-3">
+          <label htmlFor="agreementText">Agreement Text</label>
+          <textarea
+            id="agreementText"
+            className="form-control"
+            rows="10"
+            name="agreement_text"
+            value={formData.agreement_text}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        
+        {/* Display hash if available */}
+        {textHash && (
+          <div className="alert alert-info">
+            <strong>Document Hash (SHA-256):</strong>
+            <br />
+            <code>{textHash}</code>
+          </div>
+        )}
+
+        <div className="d-flex justify-content-end mb-3">
+          <div id="error-message" className="error" aria-live="polite">
+            {errorMessage}
+          </div>
+          <button type="submit" className="btn btn-secondary" id="loginBtnOne">
+            Submit
+            <span
+              role="status"
+              aria-hidden="true"
+              id="spinnerLogin"
+              style={{ display: loading ? "inline-block" : "none" }}
+            ></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default AccountDataCapture;
+
+/*
+import React, { useState } from "react";
+import "./AccountDataCapture.css";
+import { useNavigate } from "react-router-dom";
+import LogoutComponent from "./LogoutComponent";
+import { captureAccountData } from "./ApiService";
+
+function AccountDataCapture() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     last_name: "",
     date_of_birth: "",
@@ -147,3 +250,4 @@ function AccountDataCapture() {
 }
 
 export default AccountDataCapture;
+*/

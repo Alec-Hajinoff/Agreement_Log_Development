@@ -19,7 +19,7 @@ export const registerUser = async (formData) => {
 
 export const loginUser = async (formData) => {
   try {
-    const response = await fetch("http://localhost:8001/Climate_Bind_Development/login_capture.php", {
+    const response = await fetch("http://localhost:8001/Agreement_Log_Development/login_capture.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

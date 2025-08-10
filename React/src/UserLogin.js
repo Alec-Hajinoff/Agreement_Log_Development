@@ -26,21 +26,7 @@ function UserLogin() {
     try {
       const data = await loginUser(formData);
       if (data.status === "success") {
-        if (
-          data.registration_status === "Registration data is complete" &&
-          data.claims_status === "No claim submitted"
-        ) {
-          navigate("/DataSubmittedThenClaim");
-        } else if (
-          data.registration_status === "Registration data is complete" &&
-          data.claims_status === "Claim active"
-        ) {
-          navigate("/SubmittedClaim");
-        } else if (
-          data.registration_status === "Registration data is not complete"
-        ) {
           navigate("/AccountDataCapture");
-        }
       } else {
         setErrorMessage("Sign in failed. Please try again.");
       }

@@ -20,7 +20,7 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    exit; 
+    exit;
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -33,7 +33,7 @@ if (isset($input['email'], $input['password'])) {
     }
     $password = $input['password'];
     try {
-        $pdo = new PDO('mysql:host=localhost;dbname=climate_bind', 'root', '', [
+        $pdo = new PDO('mysql:host=localhost;dbname=agreement_log', 'root', '', [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -48,26 +48,11 @@ if (isset($input['email'], $input['password'])) {
         if ($user && password_verify($password, $user['password'])) {
             session_regenerate_id(true);
             $_SESSION["id"] = $user["id"];
-            $stmt = $pdo->prepare('SELECT profile_complete, policies_id FROM users WHERE id = ?');
-            $stmt->execute([$user['id']]);
-            $registrationData = $stmt->fetch();
 
             $response = [
                 'status' => 'success',
                 'message' => 'Login successful'
             ];
-
-            if ($registrationData['profile_complete'] == '1') {
-                $response['registration_status'] = 'Registration data is complete';
-            } else {
-                $response['registration_status'] = 'Registration data is not complete';
-            }
-
-            if ($registrationData['policies_id'] === NULL) {
-                $response['claims_status'] = 'No claim submitted';
-            } else {
-                $response['claims_status'] = 'Claim active';
-            }
 
             $pdo->commit();
             echo json_encode($response);
