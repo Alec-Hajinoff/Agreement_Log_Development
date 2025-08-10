@@ -38,19 +38,21 @@ export const loginUser = async (formData) => {
 
 export const captureAccountData = async (formData) => {
   try {
-    const data = new FormData();
-    for (const key in formData) {
-      data.append(key, formData[key]);
-    }
 
-    const response = await fetch("http://localhost:8001/Climate_Bind_Development/account_data_capture.php", {
+    const response = await fetch("http://localhost:8001/Agreement_Log_Development/account_data_capture.php", {
       method: "POST",
-      body: data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
       credentials: "include",
     });
 
-    const result = await response.json();
-    return result;
+    const data = await response.json();
+    return {
+      success: true,
+      hash: data.hash
+    };
   } catch (error) {
     console.error("Error:", error);
     throw new Error("An error occurred.");
