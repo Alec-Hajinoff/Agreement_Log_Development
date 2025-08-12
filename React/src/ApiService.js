@@ -7,6 +7,7 @@ export const registerUser = async (formData) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -59,23 +60,22 @@ export const captureAccountData = async (formData) => {
   }
 };
 
-//createPolicy() submits the policy data to the database and sends the user to the policy summary page.
-export const createPolicy = async (policyData) => {
+// Sends to the backend boolean true once the agreement is counter signed
+export const createPolicy = async (hash) => {
   try {
-    const response = await fetch("http://localhost:8001/Climate_Bind_Development/claim_data_capture.php", {
+    const response = await fetch("http://localhost:8001/Agreement_Log_Development/claim_data_capture.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(policyData),
+      body: JSON.stringify({ hash, signed: true }),
       credentials: "include",
     });
 
-    const result = await response.json();
-    return result;
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Error:", error);
-    throw new Error("An error occurred.");
+    throw new Error('Failed to sign agreement');
   }
 };
 
@@ -110,26 +110,22 @@ export const logoutUser = async () => {
   }
 };
 
-// fetchPremiumPayout pulls premium and payout data from the database to update the interface when a user changes coordinates or selected event.
-export const fetchPremiumPayout = async (event, latitude, longitude) => { 
+// Checking the hash as the user types
+export const fetchPremiumPayout = async (hash) => { 
   try {
-    const response = await fetch('http://localhost:8001/Climate_Bind_Development/payout_premium.php', {
+    const response = await fetch('http://localhost:8001/Agreement_Log_Development/payout_premium.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        event,
-        latitude, 
-        longitude
-      })
+      credentials: "include",
+      body: JSON.stringify({ hash })
     });
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error:", error);
-    throw new Error("Failed to fetch premium and payout data");
+    throw new Error('Failed to verify agreement hash');
   }
 };
 

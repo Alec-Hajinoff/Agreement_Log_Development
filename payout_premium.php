@@ -1,6 +1,5 @@
 <?php
-// This file sends updated premium amount and payout amount to the front end when a user selects their coordinates and event type.
-// The corresponding front end file is ClaimDataCapture.js
+// Checking the hash in the database as the user types in the UI
 require_once 'session_config.php';
 
 $allowed_origins = [
@@ -24,53 +23,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
+$env = parse_ini_file(__DIR__ . '/.env');
+$encryption_key = $env['ENCRYPTION_KEY'];
+
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=climate_bind', 'root', '');
+    $pdo = new PDO("mysql:host=127.0.0.1;dbname=agreement_log", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
     $data = json_decode(file_get_contents('php://input'), true);
-    $event = $data['event'] ?? '';
-    $latitude = $data['latitude'] ?? null;
-    $longitude = $data['longitude'] ?? null;
+    $hash = $data['hash'] ?? '';
 
-    if ($event && $latitude !== null && $longitude !== null) {
+    if ($hash) {
         $stmt = $pdo->prepare('
-            SELECT cp.premium_amount, cp.payout_amount, l.latitude_min, l.longitude_min, l.latitude_max, l.longitude_max
-            FROM cover_pricing cp
-            JOIN locations l ON cp.location_id = l.id
-            WHERE cp.event_type = ?
+            SELECT AES_DECRYPT(agreement_text, ?) as decrypted_text 
+            FROM agreements 
+            WHERE agreement_hash = ?
         ');
-        $stmt->execute([$event]);
-        $pricings = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all matching rows
+        $stmt->execute([$encryption_key, $hash]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $found = false;
-        foreach ($pricings as $pricing) {
-            // Check if the latitude and longitude are within the specified bounds
-            if (
-                $latitude > $pricing['latitude_min'] && $latitude < $pricing['latitude_max'] &&
-                $longitude > $pricing['longitude_min'] && $longitude < $pricing['longitude_max']
-            ) {
-                echo json_encode([
-                    'status' => 'success',
-                    'payout' => $pricing['payout_amount'],
-                    'premium' => $pricing['premium_amount']
-                ]);
-                $found = true;
-                break; // Exit the loop once a match is found
-            }
-        }
-
-        if (!$found) {
+        if ($result && $result['decrypted_text']) {
+            echo json_encode([
+                'status' => 'success',
+                'agreementText' => mb_convert_encoding($result['decrypted_text'], 'UTF-8', 'ISO-8859-1')
+            ]);
+        } else {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'We currently do not offer insurance for your location, apologies!'
+                'message' => 'Agreement not found'
             ]);
         }
     } else {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Event type, latitude, and longitude are required'
+            'message' => 'Hash is required'
         ]);
     }
 } catch (PDOException $e) {
