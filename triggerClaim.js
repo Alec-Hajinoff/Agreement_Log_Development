@@ -4,6 +4,54 @@ const { ethers } = require("ethers");
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // Connects to Ethereum node
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Signs transactions
 if (!process.env.RPC_URL || !process.env.PRIVATE_KEY) {
+  throw new Error(
+    "Missing required environment variables: RPC_URL or PRIVATE_KEY."
+  );
+}
+
+const insuranceFundABI = [
+  // Defines interface for interacting with the contract
+  "function publishedAgreementHash(bytes32 agreementHash) external",
+  "event SignedAgreementPublished(address indexed sender, bytes32 indexed agreementHash)",
+];
+const insuranceFundAddress = "0x1aFDCa298d9502dd3df043368DAFF452cCc80Ea4"; // Replace with deployed contract address
+const insuranceFund = new ethers.Contract(
+  insuranceFundAddress,
+  insuranceFundABI,
+  wallet
+);
+
+// Function to trigger claimPayout() & registerPayout()
+async function triggerClaimPayout(agreementHash) {
+  try {
+    const registerTx = await insuranceFund.publishedAgreementHash(
+      agreementHash
+    );
+    await registerTx.wait();
+    return {
+      status: "success",
+      message: "Payout processed",
+      txHash: registerTx.hash,
+    };
+  } catch (error) {
+    console.error("Error triggering payout:", error);
+    return {
+      status: "error",
+      message: "Transaction failed",
+      details: error.message,
+    };
+  }
+}
+
+module.exports = { triggerClaimPayout };
+
+/*
+require("dotenv").config(); // Loads environment variables from .env file
+const { ethers } = require("ethers");
+
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // Connects to Ethereum node
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Signs transactions
+if (!process.env.RPC_URL || !process.env.PRIVATE_KEY) {
     throw new Error("Missing required environment variables: RPC_URL or PRIVATE_KEY.");
 }
 
@@ -33,4 +81,4 @@ async function triggerClaimPayout(insuredAddress, payoutAmount) {
 }
 
 module.exports = { triggerClaimPayout };
-
+*/
