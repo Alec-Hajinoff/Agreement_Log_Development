@@ -24,9 +24,18 @@ const insuranceFund = new ethers.Contract(
 // Function to trigger claimPayout() & registerPayout()
 async function triggerClaimPayout(agreementHash) {
   try {
-    const registerTx = await insuranceFund.publishedAgreementHash(
-      agreementHash
-    );
+    console.log("Input agreementHash:", agreementHash); // Debug log
+    console.log("Input type:", typeof agreementHash); // Debug log
+    console.log("Input length:", agreementHash.length); // Debug log
+    // NEW - This just ensures proper formatting with '0x' prefix
+    const bytes32Hash = agreementHash.startsWith("0x")
+      ? agreementHash
+      : "0x" + agreementHash;
+
+    console.log("Formatted hash:", bytes32Hash); // Debug log
+
+    const registerTx = await insuranceFund.publishedAgreementHash(bytes32Hash);
+
     await registerTx.wait();
     return {
       status: "success",

@@ -14,6 +14,7 @@ if (in_array($origin, $allowed_origins)) {
     exit;
 }
 
+header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header('Content-Type: application/json');
