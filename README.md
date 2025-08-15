@@ -7,5 +7,6 @@ This hash and timestamp are then recorded both in the application database and i
 The counterparty accesses the link, reviews the exact agreement text, and if they agree, provides their name and confirms acceptance by clicking the countersign button. This action is recorded with additional metadata such as IP address and timestamp, and the countersign event’s hash and timestamp are also submitted to the blockchain.
 
 Both parties can view all logged agreements, including hashes, timestamps, and countersign metadata, on a user-friendly dashboard. Importantly, all blockchain verification is transparent and accessible via public explorers—no cryptocurrency wallet or special software is required.
+
 This solution delivers a practical, legally mindful approach to agreement logging and countersigning, combining cryptographic hashing, blockchain immutability, and minimal friction in a technology stack comprising React (frontend), PHP (backend), MySQL (database), and Solidity (smart contracts).
 

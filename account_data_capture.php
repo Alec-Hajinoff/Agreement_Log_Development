@@ -1,4 +1,7 @@
 <?php
+
+// This file is the database call to send the agreement text submitted by the user to the database.
+
 require_once 'session_config.php';
 
 $allowed_origins = [
@@ -22,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to encrypt the agreement text
+$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to encrypt the agreement text.
 $encryption_key = $env['ENCRYPTION_KEY'];
 
 $servername = "127.0.0.1";
@@ -51,9 +54,9 @@ if (!$id || !$agreement_text) {
 try {
     $conn->beginTransaction();
 
-    $agreement_hash = hash('sha256', $agreement_text);
+    $agreement_hash = hash('sha256', $agreement_text); // Uses PHP’s built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
 
-    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id) VALUES (AES_ENCRYPT(?, ?), ?, ?)"; // AES_DECRYPT() is a built-in MySQL function for encrypting/decrypting
+    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id) VALUES (AES_ENCRYPT(?, ?), ?, ?)"; // AES_ENCRYPT() is a built-in MySQL function for encrypting.
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception('Failed to prepare agreement insert statement');
@@ -66,7 +69,7 @@ try {
     $stmt->execute();
 
     $conn->commit();
-    
+
     echo json_encode([
         'success' => true,
         'hash' => $agreement_hash
@@ -77,4 +80,3 @@ try {
 } finally {
     $conn = null;
 }
-?>

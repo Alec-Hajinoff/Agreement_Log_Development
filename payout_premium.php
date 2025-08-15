@@ -1,5 +1,7 @@
 <?php
-// Checking the hash in the database as the user types in the UI
+
+// Checks the hash in the database, as the user types it - when that matches React displays the agreement text in the UI.
+
 require_once 'session_config.php';
 
 $allowed_origins = [
@@ -23,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-$env = parse_ini_file(__DIR__ . '/.env');
+$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to dencrypt the agreement text.
 $encryption_key = $env['ENCRYPTION_KEY'];
 
 try {
@@ -33,6 +35,8 @@ try {
 
     $data = json_decode(file_get_contents('php://input'), true);
     $hash = $data['hash'] ?? '';
+
+    // The AES_DECRYPT() in the if statement below is a built-in MySQL function for decrypting.
 
     if ($hash) {
         $stmt = $pdo->prepare('
@@ -68,4 +72,3 @@ try {
 } finally {
     $pdo = null;
 }
-?>

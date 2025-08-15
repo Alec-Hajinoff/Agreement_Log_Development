@@ -1,3 +1,5 @@
+// This is the file that allows a counter party to view and to counter signs the agreement.
+
 import React, { useState } from "react";
 import "./ClaimDataCapture.css";
 import { createPolicy, fetchPremiumPayout } from "./ApiService";
@@ -8,20 +10,22 @@ function ClaimDataCapture() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [signed, setSigned] = useState(false);
-  
+
   const handleHashChange = async (e) => {
     const hash = e.target.value;
     setAgreementHash(hash);
-    
+
     if (hash.length > 0) {
       try {
-        const data = await fetchPremiumPayout(hash); // Checking the hash as the user types
+        const data = await fetchPremiumPayout(hash); // Checks the hash as the user types and when that matches displays the agreement text.
         if (data.status === "success") {
           setAgreementText(data.agreementText);
           setErrorMessage("");
         } else {
           setAgreementText("");
-          setErrorMessage("Incorrect hash, please ask the agreement owner for the correct hash");
+          setErrorMessage(
+            "Incorrect hash, please ask the agreement owner for the correct hash"
+          );
         }
       } catch (error) {
         setErrorMessage(error.message);
@@ -37,7 +41,7 @@ function ClaimDataCapture() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await createPolicy(agreementHash); // Sends to the backend boolean true once the agreement is counter signed
+      const data = await createPolicy(agreementHash); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
       if (data.success) {
         setSigned(true);
         setErrorMessage("");
