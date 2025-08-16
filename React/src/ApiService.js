@@ -1,4 +1,5 @@
 //Frontend - backend communication must happen over HTTPS on production
+
 export const registerUser = async (formData) => {
   try {
     const response = await fetch(

@@ -9,15 +9,15 @@ if (!process.env.RPC_URL || !process.env.PRIVATE_KEY) {
   );
 }
 
-const insuranceFundABI = [
+const AgreementSignedABI = [
   // Defines interface for interacting with the contract
   "function publishedAgreementHash(bytes32 agreementHash) external",
   "event SignedAgreementPublished(address indexed sender, bytes32 indexed agreementHash)",
 ];
-const insuranceFundAddress = "0x1aFDCa298d9502dd3df043368DAFF452cCc80Ea4"; // The actual deployed contract address
-const insuranceFund = new ethers.Contract(
-  insuranceFundAddress,
-  insuranceFundABI,
+const AgreementSignedAddress = "0x1aFDCa298d9502dd3df043368DAFF452cCc80Ea4"; // The actual deployed contract address
+const AgreementSigned = new ethers.Contract(
+  AgreementSignedAddress,
+  AgreementSignedABI,
   wallet
 );
 
@@ -27,7 +27,7 @@ async function triggerClaimPayout(agreementHash) {
       ? agreementHash
       : "0x" + agreementHash;
 
-    const registerTx = await insuranceFund.publishedAgreementHash(bytes32Hash);
+    const registerTx = await AgreementSigned.publishedAgreementHash(bytes32Hash);
 
     await registerTx.wait();
     return { // This return the value of triggerClaimPayout(), and it goes into console.log("Tx Details:", txDetails); in file server.js.

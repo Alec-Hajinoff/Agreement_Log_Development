@@ -72,4 +72,3 @@ if (isset($input['email'], $input['password'])) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Email and password are required']);
 }
-?>
