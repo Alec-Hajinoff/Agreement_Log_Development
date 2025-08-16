@@ -1,10 +1,10 @@
 // This is the file that allows a counter party to view and to counter signs the agreement.
 
 import React, { useState } from "react";
-import "./ClaimDataCapture.css";
-import { createPolicy, fetchPremiumPayout } from "./ApiService";
+import "./CounterSignature.css";
+import { counterSigned, agreementHashFunction } from "./ApiService";
 
-function ClaimDataCapture() {
+function CounterSignature() {
   const [agreementHash, setAgreementHash] = useState("");
   const [agreementText, setAgreementText] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,7 +17,7 @@ function ClaimDataCapture() {
 
     if (hash.length > 0) {
       try {
-        const data = await fetchPremiumPayout(hash); // Checks the hash as the user types and when that matches displays the agreement text.
+        const data = await agreementHashFunction(hash); // Checks the hash as the user types and when that matches displays the agreement text.
         if (data.status === "success") {
           setAgreementText(data.agreementText);
           setErrorMessage("");
@@ -41,7 +41,7 @@ function ClaimDataCapture() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await createPolicy(agreementHash); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
+      const data = await counterSigned(agreementHash); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
       if (data.success) {
         setSigned(true);
         setErrorMessage("");
@@ -121,4 +121,4 @@ function ClaimDataCapture() {
   );
 }
 
-export default ClaimDataCapture;
+export default CounterSignature;

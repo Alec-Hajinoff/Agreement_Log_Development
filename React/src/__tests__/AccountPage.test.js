@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AccountPage from "../AccountPage";
 
 describe("AccountPage", () => {
-  it("renders the account page with welcome message and AccountDataCapture component", () => {
+  it("renders the account page with welcome message and CreateAgreement component", () => {
     render(
       <Router>
         <AccountPage />

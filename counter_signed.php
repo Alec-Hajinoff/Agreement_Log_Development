@@ -42,7 +42,7 @@ try {
     $result = $stmt->execute([$hash]);
 
     if ($result && $stmt->rowCount() > 0) { // rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement. In this case it simply checks that counter_signed = 1 before calling the Express server.
-        $ch = curl_init("http://localhost:8002/trigger-payout"); // Here we are calling the Express server at server.js which will call triggerClaim.js to publish the hash on chain.  
+        $ch = curl_init("http://localhost:8002/call-express"); // Here we are calling the Express server at server.js which will call pushOnchain.js to publish the hash on chain.  
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);

@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import ClaimDataCapture from "../ClaimDataCapture";
+import CounterSignature from "../CounterSignature";
 
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
 }));
 
-describe("ClaimDataCapture", () => {
+describe("CounterSignature", () => {
   let navigateMock;
 
   beforeEach(() => { // Runs before each test case
@@ -26,7 +26,7 @@ describe("ClaimDataCapture", () => {
   });
 
   it("renders the claim data capture form", () => {
-    render(<ClaimDataCapture />);
+    render(<CounterSignature />);
 
     expect(
       screen.getByPlaceholderText(
@@ -45,7 +45,7 @@ describe("ClaimDataCapture", () => {
   });
 
   it("submits the form and navigates to ClaimSubmitted on success", async () => {
-    render(<ClaimDataCapture />);
+    render(<CounterSignature />);
 
     // Simulates user input
     fireEvent.change(
@@ -82,7 +82,7 @@ describe("ClaimDataCapture", () => {
       })
     );
 
-    render(<ClaimDataCapture />);
+    render(<CounterSignature />);
 
     const submitButton = screen.getByRole("button", { name: /Start policy/i });
     fireEvent.click(submitButton);
@@ -100,7 +100,7 @@ describe("ClaimDataCapture", () => {
       Promise.reject(new Error("Network error"))
     );
 
-    render(<ClaimDataCapture />);
+    render(<CounterSignature />);
 
     // Sets required values to trigger useEffect
     fireEvent.change(screen.getByPlaceholderText(/Enter latitude/i), {

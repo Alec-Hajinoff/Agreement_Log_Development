@@ -1,15 +1,15 @@
 const express = require("express");
-const { triggerClaimPayout } = require("./triggerClaim.js"); // Imports payout function
+const { pushOnchainHash } = require("./pushOnchain.js"); // Imports payout function
 
 const app = express();
 const port = 8002;
 
 app.use(express.json()); // Parses incoming http request from PHP containing JSON data making it available in req.body (see below).
 
-app.post("/trigger-payout", async (req, res) => {
+app.post("/call-express", async (req, res) => {
   try {
     const { agreementHash } = req.body; // Extracts data (in this case 'agreementHash') from JSON.
-    const txDetails = await triggerClaimPayout(agreementHash); // Calls triggerClaimPayout() in file triggerClaim.js passing it the value of 'agreementHash'. 
+    const txDetails = await pushOnchainHash(agreementHash); // Calls pushOnchainHash() in file pushOnchain.js passing it the value of 'agreementHash'. 
     console.log("Tx Details:", txDetails);
 
     res.json({ // Data being sent back to PHP in response.

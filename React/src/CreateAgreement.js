@@ -1,11 +1,11 @@
 // When a user pastes agreement text into the text box - this is the file that is responsible.
 
 import React, { useState } from "react";
-import "./AccountDataCapture.css";
+import "./CreateAgreement.css";
 import LogoutComponent from "./LogoutComponent";
-import { captureAccountData } from "./ApiService";
+import { createAgreementFunction } from "./ApiService";
 
-function AccountDataCapture() {
+function CreateAgreement() {
   const [textHash, setTextHash] = useState("");
   const [formData, setFormData] = useState({
     agreement_text: "",
@@ -26,7 +26,7 @@ function AccountDataCapture() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await captureAccountData(formData); // The API call to send the agreement text submitted by the user to the backend.
+      const data = await createAgreementFunction(formData); // The API call to send the agreement text submitted by the user to the backend.
       if (data.success) {
         setTextHash(data.hash);
       } else {
@@ -97,4 +97,4 @@ function AccountDataCapture() {
   );
 }
 
-export default AccountDataCapture;
+export default CreateAgreement;

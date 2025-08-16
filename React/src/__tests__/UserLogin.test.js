@@ -78,7 +78,7 @@ describe("UserLogin", () => {
       }
     );
 
-    expect(navigateMock).toHaveBeenCalledWith("/AccountDataCapture");
+    expect(navigateMock).toHaveBeenCalledWith("/CreateAgreement");
   });
 
   it("displays an error message when login fails", async () => {

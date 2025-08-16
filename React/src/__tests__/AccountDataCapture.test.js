@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import AccountDataCapture from "../AccountDataCapture";
+import CreateAgreement from "../CreateAgreement";
 
 jest.mock("react-router-dom", () => ({
   useNavigate: jest.fn(),
 }));
 
-describe("AccountDataCapture", () => {
+describe("CreateAgreement", () => {
   let navigateMock;
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe("AccountDataCapture", () => {
   });
 
   it("renders the account data capture form", () => {
-    render(<AccountDataCapture />);
+    render(<CreateAgreement />);
 
     expect(screen.getByText("Surname")).toBeInTheDocument();
     expect(screen.getByText("Date of birth")).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe("AccountDataCapture", () => {
   });
 
   it("updates form data when input values change", () => {
-    render(<AccountDataCapture />);
+    render(<CreateAgreement />);
 
     const lastNameInput = screen.getByLabelText(/surname/i);
     const phoneInput = screen.getByLabelText(/phone/i);
@@ -48,7 +48,7 @@ describe("AccountDataCapture", () => {
 });
 
   it("submits the form and navigates to DataSubmittedThenClaim on success", async () => {
-    render(<AccountDataCapture />);
+    render(<CreateAgreement />);
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
     fireEvent.click(submitButton);
@@ -56,7 +56,7 @@ describe("AccountDataCapture", () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(global.fetch).toHaveBeenCalledWith(
-      "http://localhost:8001/Climate_Bind_Development/account_data_capture.php",
+      "http://localhost:8001/Climate_Bind_Development/create_agreement.php",
       expect.any(Object)
     );
     expect(navigateMock).toHaveBeenCalledWith("/DataSubmittedThenClaim");
@@ -69,7 +69,7 @@ describe("AccountDataCapture", () => {
       })
     );
 
-    render(<AccountDataCapture />);
+    render(<CreateAgreement />);
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
     fireEvent.click(submitButton);
@@ -86,7 +86,7 @@ describe("AccountDataCapture", () => {
       Promise.reject(new Error("Network error"))
     );
 
-    render(<AccountDataCapture />);
+    render(<CreateAgreement />);
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
     fireEvent.click(submitButton);

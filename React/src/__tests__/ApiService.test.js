@@ -1,8 +1,8 @@
 import {
-  captureAccountData,
-  createPolicy,
+  createAgreementFunction,
+  counterSigned,
   fetchClaimCalculations,
-  fetchPremiumPayout,
+  agreementHash,
   registerUser,
 } from "../ApiService";
 
@@ -15,7 +15,7 @@ describe("ApiService", () => {
     jest.resetAllMocks();
   });
 
-  describe("captureAccountData", () => {
+  describe("createAgreementFunction", () => {
     it("should capture account data successfully", async () => {
       const mockData = { success: true };
       global.fetch.mockImplementationOnce(() =>
@@ -25,11 +25,11 @@ describe("ApiService", () => {
       );
 
       const formData = { key: "value" };
-      const result = await captureAccountData(formData);
+      const result = await createAgreementFunction(formData);
 
       expect(result).toEqual(mockData);
       expect(global.fetch).toHaveBeenCalledWith(
-        "http://localhost:8001/Climate_Bind_Development/account_data_capture.php",
+        "http://localhost:8001/Climate_Bind_Development/create_agreement.php",
         {
           method: "POST",
           body: expect.any(FormData),
@@ -44,11 +44,11 @@ describe("ApiService", () => {
       );
 
       const formData = { key: "value" };
-      await expect(captureAccountData(formData)).rejects.toThrow();
+      await expect(createAgreementFunction(formData)).rejects.toThrow();
     });
   });
 
-  describe("createPolicy", () => {
+  describe("counterSigned", () => {
     it("should create policy successfully", async () => {
       const mockData = { success: true };
       global.fetch.mockImplementationOnce(() =>
@@ -58,11 +58,11 @@ describe("ApiService", () => {
       );
 
       const policyData = { key: "value" };
-      const result = await createPolicy(policyData);
+      const result = await counterSigned(policyData);
 
       expect(result).toEqual(mockData);
       expect(global.fetch).toHaveBeenCalledWith(
-        "http://localhost:8001/Climate_Bind_Development/claim_data_capture.php",
+        "http://localhost:8001/Climate_Bind_Development/counter_signed.php",
         {
           method: "POST",
           headers: {
@@ -80,7 +80,7 @@ describe("ApiService", () => {
       );
 
       const policyData = { key: "value" };
-      await expect(createPolicy(policyData)).rejects.toThrow();
+      await expect(counterSigned(policyData)).rejects.toThrow();
     });
   });
 
@@ -114,7 +114,7 @@ describe("ApiService", () => {
     });
   });
 
-  describe("fetchPremiumPayout", () => {
+  describe("agreementHash", () => {
     it("should fetch premium payout data successfully", async () => {
       const mockData = { premium: 100, payout: 1000 };
       global.fetch.mockImplementationOnce(() =>
@@ -123,11 +123,11 @@ describe("ApiService", () => {
         })
       );
 
-      const result = await fetchPremiumPayout("2000", "flood");
+      const result = await agreementHash("2000", "flood");
 
       expect(result).toEqual(mockData);
       expect(global.fetch).toHaveBeenCalledWith(
-        "http://localhost:8001/Climate_Bind_Development/payout_premium.php",
+        "http://localhost:8001/Climate_Bind_Development/agreement_hash.php",
         {
           method: "POST",
           headers: {

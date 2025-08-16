@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import DataSubmittedThenClaim from "../DataSubmittedThenClaim";
 
 describe("DataSubmittedThenClaim Component", () => {
-  test("renders the thank you message and ClaimDataCapture component", () => {
+  test("renders the thank you message and CounterSignature component", () => {
     render(
       <Router>
         <DataSubmittedThenClaim />

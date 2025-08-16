@@ -21,7 +21,7 @@ const AgreementSigned = new ethers.Contract(
   wallet
 );
 
-async function triggerClaimPayout(agreementHash) {
+async function pushOnchainHash(agreementHash) {
   try {
     const bytes32Hash = agreementHash.startsWith("0x") // Hexadecimal numbers for Etherum need to have 0x in front.
       ? agreementHash
@@ -30,7 +30,7 @@ async function triggerClaimPayout(agreementHash) {
     const registerTx = await AgreementSigned.publishedAgreementHash(bytes32Hash);
 
     await registerTx.wait();
-    return { // This return the value of triggerClaimPayout(), and it goes into console.log("Tx Details:", txDetails); in file server.js.
+    return { // This return the value of pushOnchainHash(), and it goes into console.log("Tx Details:", txDetails); in file server.js.
       status: "success",
       message: "Payout processed",
       txHash: registerTx.hash,
@@ -45,4 +45,4 @@ async function triggerClaimPayout(agreementHash) {
   }
 }
 
-module.exports = { triggerClaimPayout };
+module.exports = { pushOnchainHash };

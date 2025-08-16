@@ -44,12 +44,12 @@ export const loginUser = async (formData) => {
   }
 };
 
-// captureAccountData() is the API call to send the agreement text submitted by the user to the backend.
+// createAgreementFunction() is the API call to send the agreement text submitted by the user to the backend.
 
-export const captureAccountData = async (formData) => {
+export const createAgreementFunction = async (formData) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/account_data_capture.php",
+      "http://localhost:8001/Agreement_Log_Development/create_agreement.php",
       {
         method: "POST",
         headers: {
@@ -71,12 +71,12 @@ export const captureAccountData = async (formData) => {
   }
 };
 
-// The user clicks 'Start Policy' in the UI and createPolicy() sends to the backend a boolean true - the agreement is counter signed.
+// The user clicks 'Start Policy' in the UI and counterSigned() sends to the backend a boolean true - the agreement is counter signed.
 
-export const createPolicy = async (hash) => {
+export const counterSigned = async (hash) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/claim_data_capture.php",
+      "http://localhost:8001/Agreement_Log_Development/counter_signed.php",
       {
         method: "POST",
         headers: {
@@ -91,24 +91,6 @@ export const createPolicy = async (hash) => {
     return data;
   } catch (error) {
     throw new Error("Failed to sign agreement");
-  }
-};
-
-export const fetchClaimCalculations = async () => {
-  try {
-    const response = await fetch(
-      "http://localhost:8001/Climate_Bind_Development/claim_calculations.php",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching claim calculations:", error);
-    throw new Error("An error occurred while fetching claim calculations.");
   }
 };
 
@@ -131,12 +113,12 @@ export const logoutUser = async () => {
   }
 };
 
-// fetchPremiumPayout() checks the hash in the database, as the user types it, and when that matches displays the agreement text.
+// agreementHashFunction() checks the hash in the database, as the user types it, and when that matches displays the agreement text.
 
-export const fetchPremiumPayout = async (hash) => {
+export const agreementHashFunction = async (hash) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/payout_premium.php",
+      "http://localhost:8001/Agreement_Log_Development/agreement_hash.php",
       {
         method: "POST",
         headers: {
@@ -151,28 +133,5 @@ export const fetchPremiumPayout = async (hash) => {
     return data;
   } catch (error) {
     throw new Error("Failed to verify agreement hash");
-  }
-};
-
-// Sends user's wallet address to the database
-export const saveWalletAddress = async (walletData) => {
-  try {
-    const response = await fetch(
-      "http://localhost:8001/Climate_Bind_Development/save_wallet.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(walletData),
-        credentials: "include",
-      }
-    );
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw new Error("An error occurred while saving wallet address.");
   }
 };

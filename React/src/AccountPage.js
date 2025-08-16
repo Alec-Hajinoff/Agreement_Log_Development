@@ -1,7 +1,7 @@
 import React from "react";
 import blue from "./blue.svg";
 import "./AccountPage.css";
-import AccountDataCapture from "./AccountDataCapture.js";
+import CreateAgreement from "./CreateAgreement.js";
 
 function AccountPage() {
   return (
@@ -13,7 +13,7 @@ function AccountPage() {
             fill in the form below to start your insurance policy. You can save
             your progress and fill in the form in several sittings.
           </p>
-          <AccountDataCapture />
+          <CreateAgreement />
         </div>
       </div>
     </div>
