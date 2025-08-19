@@ -1,5 +1,4 @@
 import React from "react";
-import blue from "./blue.svg";
 import "./Footer.css";
 
 function Footer() {

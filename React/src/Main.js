@@ -1,27 +1,37 @@
 import React from "react";
-//import blue from "./blue.svg";
 import "./Main.css";
 
 function Main() {
   return (
     <div>
       <p>
-        Climate Bind is a web application that enables digital parametric
-        weather insurance using smart contracts and digital currency. Coverage
-        is triggered automatically by predefined weather events - such as
-        extreme rainfall or drought - based on verified third-party data. When
-        conditions are met, payouts are issued directly to the user's digital
-        wallet with no claims process.
+        Small businesses often rely on semi-formal agreements with suppliers or
+        customers conducted via email. Our web application serves as a secure
+        and verifiable email agreement log tailored for business users,
+        providing an independent proof of existence and mutual acceptance of
+        these agreements.
       </p>
 
       <p>
-        The platform is offered as a white-label solution for insurers and
-        institutions. Partners can configure trigger conditions, payout rules,
-        and coverage terms, while retaining full control over branding and
-        customer relationships. The system handles event monitoring, contract
-        execution, and digital currency transactions end-to-end.
+        Users can easily copy an agreement directly from their email and paste
+        it into the application’s submission interface. On submission, the
+        database securely stores the encrypted agreement along with a timestamp,
+        and allows a counter party to electronically countersign the agreement.
       </p>
 
+      <p>
+        The agreement hash and timestamp are then also anchored on a public
+        blockchain. Both parties can view all logged agreements, including
+        hashes and timestamps, on a user-friendly dashboard. Importantly, all
+        blockchain verification is transparent and accessible via public
+        explorers.
+      </p>
+
+      <p>
+        This solution delivers a practical, legally mindful approach to
+        agreement logging and countersigning, combining cryptographic hashing,
+        blockchain immutability, and minimal friction.
+      </p>
     </div>
   );
 }

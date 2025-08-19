@@ -1,5 +1,4 @@
 import React from "react";
-import blue from "./blue.svg";
 import "./MainRegLog.css";
 import Main from "./Main.js";
 import UserRegistration from "./UserRegistration.js";

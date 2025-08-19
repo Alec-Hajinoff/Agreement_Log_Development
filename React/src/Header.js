@@ -1,5 +1,5 @@
 import React from "react";
-import blue from "./blue.svg";
+import blue from "./LogoSampleCopy.png";
 import "./Header.css";
 
 function Header() {
