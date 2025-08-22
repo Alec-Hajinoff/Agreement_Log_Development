@@ -10,6 +10,7 @@ function CounterSignature() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [signed, setSigned] = useState(false);
+  const [userName, setUserName] = useState("");
 
   const handleHashChange = async (e) => {
     const hash = e.target.value;
@@ -41,7 +42,7 @@ function CounterSignature() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await counterSigned(agreementHash); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
+      const data = await counterSigned(agreementHash, userName); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
       if (data.success) {
         setSigned(true);
         setErrorMessage("");
@@ -90,6 +91,20 @@ function CounterSignature() {
           </div>
         )}
 
+        <div className="form-group row mb-3">
+          <label className="col-sm-4 col-form-label text-end">Your Name:</label>
+          <div className="col-sm-8">
+            <input
+              type="text"
+              className="form-control"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+        </div>
+
         <div className="d-flex justify-content-end mb-3">
           <div className="align-middle">
             <div id="error-message" className="error" aria-live="polite">
@@ -104,7 +119,7 @@ function CounterSignature() {
               type="submit"
               className="btn btn-secondary"
               id="loginBtnOne"
-              disabled={!agreementText || signed}
+              disabled={!agreementText || signed || !userName.trim()}
             >
               Start policy
               <span

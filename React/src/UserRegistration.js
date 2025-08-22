@@ -6,7 +6,7 @@ import { registerUser } from "./ApiService";
 function UserRegistration() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    first_name: "",
+    name: "",
     email: "",
     password: "",
   });
@@ -50,11 +50,11 @@ function UserRegistration() {
           type="text"
           pattern="[a-zA-Z ]+"
           className="form-control"
-          name="first_name"
-          value={formData.first_name}
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           required
-          placeholder="Your first name"
+          placeholder="Your full name"
         />
       </div>
       <div className="form-group">

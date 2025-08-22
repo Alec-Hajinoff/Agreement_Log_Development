@@ -42,7 +42,7 @@ if ($input === null) {
     exit;
 }
 
-$name = $input['first_name'] ?? null;
+$name = $input['name'] ?? null;
 $email = filter_var($input['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $password = $input['password'] ?? null;
 
@@ -61,7 +61,7 @@ try {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (email, password, first_name) VALUES (:email, :password, :name)";
+    $sql = "INSERT INTO users (email, password, name) VALUES (:email, :password, :name)";
     $stmt = $conn->prepare($sql);
     if ($stmt) {
         $stmt->bindParam(':email', $email);

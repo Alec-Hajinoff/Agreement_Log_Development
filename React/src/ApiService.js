@@ -71,9 +71,9 @@ export const createAgreementFunction = async (formData) => {
   }
 };
 
-// The user clicks 'Start Policy' in the UI and counterSigned() sends to the backend a boolean true - the agreement is counter signed.
+// The user clicks 'Start Policy' in the UI and counterSigned() sends to the backend a boolean true - the agreement is counter signed, as well as the countersigner's name.
 
-export const counterSigned = async (hash) => {
+export const counterSigned = async (hash, userName) => {
   try {
     const response = await fetch(
       "http://localhost:8001/Agreement_Log_Development/counter_signed.php",
@@ -82,7 +82,7 @@ export const counterSigned = async (hash) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ hash, signed: true }),
+        body: JSON.stringify({ hash, signed: true, userName: userName }),
         credentials: "include",
       }
     );

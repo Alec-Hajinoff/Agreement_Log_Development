@@ -32,14 +32,20 @@ try {
 
     $data = json_decode(file_get_contents('php://input'), true);
     $hash = $data['hash'] ?? null;
+    $userName = $data['userName'] ?? null;
 
     if (!$hash) {
         echo json_encode(['success' => false, 'message' => 'Missing hash']);
         exit;
     }
 
-    $stmt = $pdo->prepare("UPDATE agreements SET counter_signed = 1 WHERE agreement_hash = ?");
-    $result = $stmt->execute([$hash]);
+    if (!$userName) {
+        echo json_encode(['success' => false, 'message' => 'Missing user name']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("UPDATE agreements SET counter_signed = 1, countersigner_name = ?, countersigned_timestamp = NOW() WHERE agreement_hash = ?");
+    $result = $stmt->execute([$userName, $hash]);
 
     if ($result && $stmt->rowCount() > 0) { // rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement. In this case it simply checks that counter_signed = 1 before calling the Express server.
         $ch = curl_init("http://localhost:8002/call-express"); // Here we are calling the Express server at server.js which will call pushOnchain.js to publish the hash on chain.  
@@ -51,6 +57,12 @@ try {
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
         curl_close($ch);
+
+        if ($curlError) {
+            echo json_encode(['success' => false, 'message' => 'Blockchain service error: ' . $curlError]);
+            exit;
+        }
+
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Agreement not found or already signed']);

@@ -83,7 +83,7 @@ describe("UserRegistration", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          first_name: "John",
+          name: "John",
           email: "john@example.com",
           password: "password123",
         }),
