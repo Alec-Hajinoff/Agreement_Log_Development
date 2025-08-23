@@ -11,26 +11,30 @@ if (!process.env.RPC_URL || !process.env.PRIVATE_KEY) {
 
 const AgreementSignedABI = [
   // Defines interface for interacting with the contract
-  "function publishedAgreementHash(bytes32 agreementHash) external",
-  "event SignedAgreementPublished(address indexed sender, bytes32 indexed agreementHash)",
+  "function publishedAgreementHash(bytes32 agreementHash, uint256 timestamp) external",
+  "event SignedAgreementPublished(address indexed sender, bytes32 indexed agreementHash, uint256 timestamp)",
 ];
-const AgreementSignedAddress = "0x1aFDCa298d9502dd3df043368DAFF452cCc80Ea4"; // The actual deployed contract address
+const AgreementSignedAddress = "0x82c086a29C39Cf184050A0687652f4e16b392014"; // The actual deployed contract address
 const AgreementSigned = new ethers.Contract(
   AgreementSignedAddress,
   AgreementSignedABI,
   wallet
 );
 
-async function pushOnchainHash(agreementHash) {
+async function pushOnchainHash(agreementHash, timestamp) {
   try {
     const bytes32Hash = agreementHash.startsWith("0x") // Hexadecimal numbers for Etherum need to have 0x in front.
       ? agreementHash
       : "0x" + agreementHash;
 
-    const registerTx = await AgreementSigned.publishedAgreementHash(bytes32Hash);
+    const registerTx = await AgreementSigned.publishedAgreementHash(
+      bytes32Hash,
+      timestamp
+    );
 
     await registerTx.wait();
-    return { // This return the value of pushOnchainHash(), and it goes into console.log("Tx Details:", txDetails); in file server.js.
+    return {
+      // This return the value of pushOnchainHash(), and it goes into console.log("Tx Details:", txDetails); in file server.js.
       status: "success",
       message: "Payout processed",
       txHash: registerTx.hash,

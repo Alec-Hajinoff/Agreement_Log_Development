@@ -8,11 +8,12 @@ app.use(express.json()); // Parses incoming http request from PHP containing JSO
 
 app.post("/call-express", async (req, res) => {
   try {
-    const { agreementHash } = req.body; // Extracts data (in this case 'agreementHash') from JSON.
-    const txDetails = await pushOnchainHash(agreementHash); // Calls pushOnchainHash() in file pushOnchain.js passing it the value of 'agreementHash'. 
+    const { agreementHash, timestamp } = req.body; // Extracts data (in this case 'agreementHash') from JSON.
+    const txDetails = await pushOnchainHash(agreementHash, timestamp); // Calls pushOnchainHash() in file pushOnchain.js passing it the value of 'agreementHash'.
     console.log("Tx Details:", txDetails);
 
-    res.json({ // Data being sent back to PHP in response.
+    res.json({
+      // Data being sent back to PHP in response.
       status: txDetails?.status,
       message: txDetails?.message,
       txHash: txDetails?.txHash,
