@@ -58,6 +58,7 @@ function CounterSignature() {
 
   return (
     <div className="container text-center">
+      <p>To countersign an agreement, please follow the steps below.</p>
       <form onSubmit={handleSubmit}>
         <div className="row justify-content-center">
           <div className="col-md-6">
@@ -71,7 +72,7 @@ function CounterSignature() {
                   className="form-control"
                   value={agreementHash}
                   onChange={handleHashChange}
-                  placeholder="Enter agreement hash"
+                  placeholder="Agreement hash"
                 />
               </div>
             </div>
@@ -92,14 +93,16 @@ function CounterSignature() {
         )}
 
         <div className="form-group row mb-3">
-          <label className="col-sm-4 col-form-label text-end">Your Name:</label>
+          <label className="col-sm-4 col-form-label text-end">
+            Please enter your full name:
+          </label>
           <div className="col-sm-8">
             <input
               type="text"
               className="form-control"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              placeholder="Enter your name"
+              placeholder="Your full name"
               required
             />
           </div>
@@ -121,7 +124,7 @@ function CounterSignature() {
               id="loginBtnOne"
               disabled={!agreementText || signed || !userName.trim()}
             >
-              Start policy
+              Countersign
               <span
                 role="status"
                 aria-hidden="true"
