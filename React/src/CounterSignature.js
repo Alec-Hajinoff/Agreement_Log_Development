@@ -60,22 +60,19 @@ function CounterSignature() {
     <div className="container text-center">
       <p>To countersign an agreement, please follow the steps below.</p>
       <form onSubmit={handleSubmit}>
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <div className="form-group row mb-3">
-              <label className="col-sm-4 col-form-label text-end">
-                Please enter the agreement hash:
-              </label>
-              <div className="col-sm-8">
-                <input
-                  type="text"
-                  className="form-control"
-                  value={agreementHash}
-                  onChange={handleHashChange}
-                  placeholder="Agreement hash"
-                />
-              </div>
-            </div>
+        <div className="form-group row mb-3">
+          <label className="col-sm-4 col-form-label text-end">
+            Step 1: Please enter the agreement hash. The agreement text will
+            appear below.
+          </label>
+          <div className="col-sm-8">
+            <input
+              type="text"
+              className="form-control"
+              value={agreementHash}
+              onChange={handleHashChange}
+              placeholder="Agreement hash"
+            />
           </div>
         </div>
 
@@ -84,7 +81,7 @@ function CounterSignature() {
             <div className="col-md-8">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Agreement Text</h5>
+                  <label className="card-title">Agreement Text:</label>
                   <p className="card-text">{agreementText}</p>
                 </div>
               </div>
@@ -94,7 +91,8 @@ function CounterSignature() {
 
         <div className="form-group row mb-3">
           <label className="col-sm-4 col-form-label text-end">
-            Please enter your full name:
+            Step 2: If you agree, enter your full name and click Countersign. A
+            PDF copy will then be downloaded to your computer.
           </label>
           <div className="col-sm-8">
             <input
@@ -113,16 +111,21 @@ function CounterSignature() {
             <div id="error-message" className="error" aria-live="polite">
               {errorMessage}
             </div>
+            {loading && (
+              <div className="text-info mb-2">
+                Saving your agreement to the blockchain, please wait…
+              </div>
+            )}
             {signed && (
               <div className="text-success mb-2">
-                Thank you, the agreement has been counter-signed
+                Thank you, the agreement has been counter-signed!
               </div>
             )}
             <button
               type="submit"
               className="btn btn-secondary"
               id="loginBtnOne"
-              disabled={!agreementText || signed || !userName.trim()}
+              disabled={!agreementText || signed || loading || !userName.trim()}
             >
               Countersign
               <span

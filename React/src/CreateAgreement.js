@@ -126,7 +126,7 @@ function CreateAgreement() {
         <div className="form-group mb-3">
 
           <div className="mt-4">
-            <h4>Agreements created but not yet countersigned</h4>
+            <label className="step-label">Agreements created but not yet countersigned</label>
             <table className="table">
               <thead>
                 <tr>
@@ -144,7 +144,7 @@ function CreateAgreement() {
               </tbody>
             </table>
 
-            <h4 className="mt-4">Agreements countersigned</h4>
+            <label className="table-label mt-4">Agreements countersigned</label>
             <table className="table">
               <thead>
                 <tr>

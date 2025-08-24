@@ -71,7 +71,7 @@ export const createAgreementFunction = async (formData) => {
   }
 };
 
-// The user clicks 'Start Policy' in the UI and counterSigned() sends to the backend a boolean true - the agreement is countersigned, as well as the countersigner's name.
+// The user clicks 'Countersign' in the UI and counterSigned() sends to the backend a boolean true - the agreement is countersigned, as well as the countersigner's name.
 
 export const counterSigned = async (hash, userName) => {
   try {
