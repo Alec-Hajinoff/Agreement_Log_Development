@@ -9,6 +9,6 @@ test("Main component renders without crashing", () => {
   
   test("Main component contains the correct text", () => {
     render(<Main />);
-    const textElement = screen.getByText(/Climate Bind is a web application that enables digital parametri/i);
+    const textElement = screen.getByText(/Small businesses often rely on semi-formal agreements/i);
     expect(textElement).toBeInTheDocument();
   });

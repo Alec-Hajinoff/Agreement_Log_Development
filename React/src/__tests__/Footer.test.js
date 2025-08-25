@@ -15,9 +15,9 @@ describe("Footer Component", () => {
     expect(screen.getByText(/Email address:/i)).toBeInTheDocument();
 
     const emailLink = screen.getByRole("link", {
-      name: /team@climatebind.com/i,
+      name: /team@agreementlog.com/i,
     });
     expect(emailLink).toBeInTheDocument();
-    expect(emailLink).toHaveAttribute("href", "mailto:team@climatebind.com");
+    expect(emailLink).toHaveAttribute("href", "mailto:team@agreementlog.com");
   });
 });

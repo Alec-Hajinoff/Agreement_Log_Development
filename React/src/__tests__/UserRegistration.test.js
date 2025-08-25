@@ -28,7 +28,7 @@ describe("UserRegistration", () => {
   it("renders the registration form", () => {
     render(<UserRegistration />);
 
-    expect(screen.getByPlaceholderText("Your first name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Your full name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email address")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText(
@@ -43,7 +43,7 @@ describe("UserRegistration", () => {
   it("updates form data when input values change", () => {
     render(<UserRegistration />);
 
-    const firstNameInput = screen.getByPlaceholderText("Your first name");
+    const firstNameInput = screen.getByPlaceholderText("Your full name");
     const emailInput = screen.getByPlaceholderText("Email address");
     const passwordInput = screen.getByPlaceholderText(
       "Choose a strong password (minimum 8 characters)"
@@ -61,7 +61,7 @@ describe("UserRegistration", () => {
   it("submits the form and navigates to RegisteredPage on success", async () => {
     render(<UserRegistration />);
 
-    const firstNameInput = screen.getByPlaceholderText("Your first name");
+    const firstNameInput = screen.getByPlaceholderText("Your full name");
     const emailInput = screen.getByPlaceholderText("Email address");
     const passwordInput = screen.getByPlaceholderText(
       "Choose a strong password (minimum 8 characters)"
@@ -76,7 +76,7 @@ describe("UserRegistration", () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(global.fetch).toHaveBeenCalledWith(
-      "http://localhost:8001/Climate_Bind_Development/form_capture.php",
+      "http://localhost:8001/Agreement_Log_Development/form_capture.php",
       {
         method: "POST",
         headers: {
@@ -87,6 +87,7 @@ describe("UserRegistration", () => {
           email: "john@example.com",
           password: "password123",
         }),
+        credentials: "include",
       }
     );
 
@@ -102,7 +103,7 @@ describe("UserRegistration", () => {
 
     render(<UserRegistration />);
 
-    const firstNameInput = screen.getByPlaceholderText("Your first name");
+    const firstNameInput = screen.getByPlaceholderText("Your full name");
     const emailInput = screen.getByPlaceholderText("Email address");
     const passwordInput = screen.getByPlaceholderText(
       "Choose a strong password (minimum 8 characters)"

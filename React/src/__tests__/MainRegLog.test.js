@@ -11,10 +11,10 @@ describe("MainRegLog Component", () => {
       </Router>
     );
 
-    const mainElement = screen.getByText(/Climate Bind/i);
+    const mainElement = screen.getByText(/Small businesses often rely/i);
     expect(mainElement).toBeInTheDocument();
 
-    const registrationText = screen.getByPlaceholderText(/Your first name/i);
+    const registrationText = screen.getByPlaceholderText(/Your full name/i);
     expect(registrationText).toBeInTheDocument();
   });
 });

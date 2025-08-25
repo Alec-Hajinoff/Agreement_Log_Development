@@ -7,6 +7,6 @@ test("renders the Header component", () => {
 
   const logo = screen.getByAltText(/a company logo/i);
   expect(logo).toBeInTheDocument();
-  expect(logo).toHaveAttribute("src", "blue.svg");
+  expect(logo).toHaveAttribute("src", "LogoSampleCopy.png");
   expect(logo).toHaveAttribute("title", "A company logo");
 });

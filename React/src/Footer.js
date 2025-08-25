@@ -12,7 +12,7 @@ function Footer() {
             &copy; Copyright 2024 - {currentYear}. All rights reserved. Company
             address: 4 Bridge Gate, London, N21 2AH, United Kingdom. Email
             address:<span> </span>
-            <a href="mailto:team@climatebind.com">team@agreementlog.com</a>
+            <a href="mailto:team@agreementlog.com">team@agreementlog.com</a>
           </em>
         </p>
       </div>
