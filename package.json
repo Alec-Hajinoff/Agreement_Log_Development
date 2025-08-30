@@ -10,5 +10,8 @@
     "@matterlabs/hardhat-zksync-verify": "^1.8.1",
     "@nomicfoundation/hardhat-toolbox": "^6.0.0",
     "hardhat": "^2.25.0"
+  },
+  "scripts": {
+    "start": "node server.js"
   }
 }
