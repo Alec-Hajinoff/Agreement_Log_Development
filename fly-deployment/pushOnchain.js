@@ -1,13 +1,14 @@
 require("dotenv").config(); // Loads environment variables from .env file
 const { ethers } = require("ethers");
 
-const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // Connects to Ethereum node
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Signs transactions
 if (!process.env.RPC_URL || !process.env.PRIVATE_KEY) {
   throw new Error(
     "Missing required environment variables: RPC_URL or PRIVATE_KEY."
   );
 }
+
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // Connects to Ethereum node
+const wallet = new ethers.Wallet('0x' + process.env.PRIVATE_KEY, provider); // Signs transactions
 
 const AgreementSignedABI = [
   // Defines interface for interacting with the contract

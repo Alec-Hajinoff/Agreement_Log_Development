@@ -2,7 +2,7 @@ const express = require("express");
 const { pushOnchainHash } = require("./pushOnchain.js"); // Imports payout function
 
 const app = express();
-const port = 8002;
+const port = process.env.PORT || 8002;
 
 app.use(express.json()); // Parses incoming http request from PHP containing JSON data making it available in req.body (see below).
 
@@ -28,7 +28,7 @@ app.post("/call-express", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   // Listens on the specified port
   console.log(`Server running on port ${port}`);
 });
