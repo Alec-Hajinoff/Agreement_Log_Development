@@ -54,7 +54,8 @@ try {
         $timestampStmt->execute([$hash]);
         $timestamp = $timestampStmt->fetch(PDO::FETCH_ASSOC)['unix_timestamp'];
 
-        $ch = curl_init("https://agreement-log.fly.dev/call-express"); // Here we are calling the Express server at server.js which will call pushOnchain.js to publish the hash on chain.  
+        $ch = curl_init("https://agreement-log.fly.dev/call-express"); // Here we are calling the Express server installed on fly.io (see folder fly-deployment), server.js will call pushOnchain.js to publish the hash on chain.  
+        // If the Express server is running locally, call 
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
