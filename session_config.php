@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 3600,
         'path' => '/',
-        'domain' => 'localhost',    // Use 'climatebind.com' in production
-        'secure' => false,          // Change to true when using HTTPS
+        'domain' => 'agreementlog.com',    // Use 'climatebind.com' in production
+        'secure' => true,          // Change to true when using HTTPS
         'httponly' => true,
         'samesite' => 'Strict'
     ]);

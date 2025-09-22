@@ -3,7 +3,7 @@
 export const registerUser = async (formData) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/form_capture.php",
+      "https://agreementlog.com/Agreement_Log_Development/form_capture.php",
       {
         method: "POST",
         headers: {
@@ -25,7 +25,7 @@ export const registerUser = async (formData) => {
 export const loginUser = async (formData) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/login_capture.php",
+      "https://agreementlog.com/Agreement_Log_Development/login_capture.php",
       {
         method: "POST",
         headers: {
@@ -49,7 +49,7 @@ export const loginUser = async (formData) => {
 export const createAgreementFunction = async (formData) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/create_agreement.php",
+      "https://agreementlog.com/Agreement_Log_Development/create_agreement.php",
       {
         method: "POST",
         headers: {
@@ -76,7 +76,7 @@ export const createAgreementFunction = async (formData) => {
 export const counterSigned = async (hash, userName) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/counter_signed.php",
+      "https://agreementlog.com/Agreement_Log_Development/counter_signed.php",
       {
         method: "POST",
         headers: {
@@ -97,7 +97,7 @@ export const counterSigned = async (hash, userName) => {
 export const logoutUser = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Climate_Bind_Development/logout_component.php",
+      "https://agreementlog.com/Agreement_Log_Development/logout_component.php",
       {
         method: "POST",
         credentials: "include",
@@ -118,7 +118,7 @@ export const logoutUser = async () => {
 export const agreementHashFunction = async (hash) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/agreement_hash.php",
+      "https://agreementlog.com/Agreement_Log_Development/agreement_hash.php",
       {
         method: "POST",
         headers: {
@@ -141,7 +141,7 @@ export const agreementHashFunction = async (hash) => {
 export const userDashboard = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/user_dashboard.php",
+      "https://agreementlog.com/Agreement_Log_Development/user_dashboard.php",
       {
         method: "POST",
         headers: {

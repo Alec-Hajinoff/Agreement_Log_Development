@@ -2,7 +2,8 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "http://localhost:3000"
+    "https://agreementlog.com/",
+    "https://www.agreementlog.com/"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -23,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-$servername = "127.0.0.1";
-$username = "root";
-$passwordServer = "";
+$servername = "localhost";
+$username = "agreement_log_user";
+$passwordServer = "em6JmMah3YCXFXr";
 $dbname = "agreement_log";
 
 try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $passwordServer);
+    $conn = new PDO("mysql:host=$servername;port=3306;dbname=$dbname", $username, $passwordServer);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 } catch (PDOException $e) {

@@ -2,7 +2,8 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "http://localhost:3000"
+    "https://agreementlog.com/",
+    "https://www.agreementlog.com/"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -33,7 +34,7 @@ if (isset($input['email'], $input['password'])) {
     }
     $password = $input['password'];
     try {
-        $pdo = new PDO('mysql:host=localhost;dbname=agreement_log', 'root', '', [
+        $pdo = new PDO("mysql:host=localhost;port=3306;dbname=agreement_log", "agreement_log_user", "em6JmMah3YCXFXr", [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
