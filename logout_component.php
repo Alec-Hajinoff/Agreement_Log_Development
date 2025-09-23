@@ -4,8 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $allowed_origins = [
-    "https://agreementlog.com/",
-    "https://www.agreementlog.com/"
+    "https://agreementlog.com",
+    "https://www.agreementlog.com"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

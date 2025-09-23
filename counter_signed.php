@@ -5,8 +5,8 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "https://agreementlog.com/",
-    "https://www.agreementlog.com/",
+    "https://agreementlog.com",
+    "https://www.agreementlog.com",
     "https://agreement-log.fly.dev"
 ];
 
