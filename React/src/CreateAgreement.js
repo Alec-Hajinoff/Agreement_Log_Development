@@ -111,11 +111,11 @@ function CreateAgreement() {
             Step 2: Copy the agreement hash above and email it to the other
             party together with this link:{" "}
             <a
-              href="http://localhost:3000/CounterSignature"
+              href="https://agreementlog.com/CounterSignature"
               target="_blank"
               rel="noopener noreferrer"
             >
-              http://localhost:3000/CounterSignature
+              https://agreementlog.com/CounterSignature
             </a>{" "}
             <br /> Ask them to open the link, enter the agreement hash, review
             the agreement text, and click “Countersign” if they agree. <br />{" "}
