@@ -97,7 +97,7 @@ export const counterSigned = async (hash, userName) => {
 export const logoutUser = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Climate_Bind_Development/logout_component.php",
+      "http://localhost:8001/Agreement_Log_Development/logout_component.php",
       {
         method: "POST",
         credentials: "include",
