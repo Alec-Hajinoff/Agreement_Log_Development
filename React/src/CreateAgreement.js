@@ -14,6 +14,7 @@ function CreateAgreement() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [agreements, setAgreements] = useState([]);
+  const [activeTab, setActiveTab] = useState("Clients");
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -55,6 +56,10 @@ function CreateAgreement() {
     }
   };
 
+  const filteredCountersignedAgreements = agreements
+    .filter((agreement) => agreement.counter_signed)
+    .filter((agreement) => agreement.category === activeTab);
+
   return (
     <div className="container text-center">
       <div>
@@ -88,7 +93,7 @@ function CreateAgreement() {
             <option value="Clients">Clients</option>
             <option value="Suppliers">Suppliers</option>
             <option value="Operations">Operations</option>
-            <option value="Operations">HR</option>
+            <option value="HR">HR</option>
             <option value="Marketing">Marketing</option>
             <option value="Finance">Finance</option>
             <option value="Other">Other</option>
@@ -174,6 +179,31 @@ function CreateAgreement() {
             </table>
 
             <label className="table-label mt-4">Agreements countersigned</label>
+            {/* Tabs for filtering countersigned agreements */}
+            <div className="tabs-container mb-3">
+              <div className="nav nav-tabs">
+                {[
+                  "Clients",
+                  "Suppliers",
+                  "Operations",
+                  "HR",
+                  "Marketing",
+                  "Finance",
+                  "Other",
+                ].map((category) => (
+                  <button
+                    key={category}
+                    className={`nav-link ${
+                      activeTab === category ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab(category)}
+                    type="button"
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
             <table className="table">
               <thead>
                 <tr>
@@ -183,15 +213,13 @@ function CreateAgreement() {
                 </tr>
               </thead>
               <tbody>
-                {agreements
-                  .filter((agreement) => agreement.counter_signed)
-                  .map((agreement) => (
-                    <tr key={agreement.agreement_hash}>
-                      <td>{agreement.countersigner_name}</td>
-                      <td>{agreement.countersigned_timestamp}</td>
-                      <td>{agreement.agreement_hash}</td>
-                    </tr>
-                  ))}
+                {filteredCountersignedAgreements.map((agreement) => (
+                  <tr key={agreement.agreement_hash}>
+                    <td>{agreement.countersigner_name}</td>
+                    <td>{agreement.countersigned_timestamp}</td>
+                    <td>{agreement.agreement_hash}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
