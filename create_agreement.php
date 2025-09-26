@@ -46,9 +46,20 @@ $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 $id = $_SESSION['id'] ?? null;
 $agreement_text = $data['agreement_text'] ?? null;
+// Capture and validate the category sent from frontend
+$category = isset($data['category']) ? trim($data['category']) : null;
+// Allow list of valid categories
+$allowedCategories = ['Clients', 'Suppliers', 'Operations', 'HR', 'Marketing', 'Finance', 'Other'];
 
-if (!$id || !$agreement_text) {
+
+if (!$id || !$agreement_text || !$category) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+    exit;
+}
+
+// Validate category against allow list
+if (!in_array($category, $allowedCategories, true)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid category']);
     exit;
 }
 
@@ -57,7 +68,7 @@ try {
 
     $agreement_hash = hash('sha256', $agreement_text); // Uses PHP’s built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
 
-    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id) VALUES (AES_ENCRYPT(?, ?), ?, ?)"; // AES_ENCRYPT() is a built-in MySQL function for encrypting.
+    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category) VALUES (AES_ENCRYPT(?, ?), ?, ?, ?)"; // AES_ENCRYPT() is a built-in MySQL function for encrypting.
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception('Failed to prepare agreement insert statement');
@@ -67,6 +78,8 @@ try {
     $stmt->bindParam(2, $encryption_key);
     $stmt->bindParam(3, $agreement_hash);
     $stmt->bindParam(4, $id);
+    $stmt->bindParam(5, $category);
+    
     $stmt->execute();
 
     $conn->commit();
