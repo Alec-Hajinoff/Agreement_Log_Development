@@ -9,10 +9,12 @@ function CreateAgreement() {
   const [textHash, setTextHash] = useState("");
   const [formData, setFormData] = useState({
     agreement_text: "",
+    category: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [agreements, setAgreements] = useState([]);
+  const [activeTab, setActiveTab] = useState("Clients");
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -54,6 +56,10 @@ function CreateAgreement() {
     }
   };
 
+  const filteredCountersignedAgreements = agreements
+      .filter((agreement) => agreement.counter_signed)
+      .filter((agreement) => agreement.category === activeTab);
+
   return (
     <div className="container text-center">
       <div>
@@ -67,9 +73,36 @@ function CreateAgreement() {
         <LogoutComponent />
       </div>
       <form onSubmit={handleSubmit}>
+       {/* Agreement category dropdown */}
+              <div className="form-group mb-3">
+                <label htmlFor="agreementCategory">
+                  Step 1: Select the category your agreement relates to from the
+                  dropdown menu below:
+                </label>
+                <select
+                  required
+                  id="agreementCategory"
+                  className="form-control"
+                  name="category"
+                  value={formData.category || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    Select a category
+                  </option>
+                  <option value="Clients">Clients</option>
+                  <option value="Suppliers">Suppliers</option>
+                  <option value="Operations">Operations</option>
+                  <option value="HR">HR</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
         <div className="form-group mb-3">
           <label htmlFor="agreementText">
-            Step 1: Copy the agreement from your email, paste it into the text
+            Step 2: Copy the agreement from your email, paste it into the text
             box below, and click “Generate hash”.
           </label>
           <textarea
@@ -108,7 +141,7 @@ function CreateAgreement() {
         </div>
         <div className="form-group mb-3">
           <label>
-            Step 2: Copy the agreement hash above and email it to the other
+            Step 3: Copy the agreement hash above and email it to the other
             party together with this link:{" "}
             <a
               href="https://agreementlog.com/CounterSignature"
@@ -124,9 +157,10 @@ function CreateAgreement() {
           </label>
         </div>
         <div className="form-group mb-3">
-
-          <div className="mt-4">
-            <label className="step-label">Agreements created but not yet countersigned</label>
+        <div className="mt-4">
+            <label className="step-label">
+              Agreements created but not yet countersigned
+            </label>
             <table className="table">
               <thead>
                 <tr>
@@ -145,6 +179,31 @@ function CreateAgreement() {
             </table>
 
             <label className="table-label mt-4">Agreements countersigned</label>
+            {/* Tabs for filtering countersigned agreements */}
+                        <div className="tabs-container mb-3">
+                          <div className="nav nav-tabs">
+                            {[
+                              "Clients",
+                              "Suppliers",
+                              "Operations",
+                              "HR",
+                              "Marketing",
+                              "Finance",
+                              "Other",
+                            ].map((category) => (
+                              <button
+                                key={category}
+                                className={`nav-link ${
+                                  activeTab === category ? "active" : ""
+                                }`}
+                                onClick={() => setActiveTab(category)}
+                                type="button"
+                              >
+                                {category}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
             <table className="table">
               <thead>
                 <tr>
@@ -154,9 +213,7 @@ function CreateAgreement() {
                 </tr>
               </thead>
               <tbody>
-                {agreements
-                  .filter((agreement) => agreement.counter_signed)
-                  .map((agreement) => (
+                 {filteredCountersignedAgreements.map((agreement) => (
                     <tr key={agreement.agreement_hash}>
                       <td>{agreement.countersigner_name}</td>
                       <td>{agreement.countersigned_timestamp}</td>
