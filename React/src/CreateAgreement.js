@@ -10,6 +10,8 @@ function CreateAgreement() {
   const [formData, setFormData] = useState({
     agreement_text: "",
     category: "",
+    needs_signature: 0,
+    agreement_tag: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -116,6 +118,74 @@ function CreateAgreement() {
           />
         </div>
 
+        {/* Added: New form group for countersignature toggle */}
+        <div className="form-group mb-3">
+          <label>
+            Some agreements need a countersignature — like those with clients or
+            external partners. Others may not — like internal commitments
+            between colleagues. Does your agreement need to be confirmed by the
+            other party?
+          </label>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              id="needsSignatureYes"
+              name="needs_signature"
+              value={1}
+              required
+              checked={formData.needs_signature === 1}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  needs_signature: parseInt(e.target.value),
+                });
+                setTextHash("");
+              }}
+            />
+            <label className="form-check-label" htmlFor="needsSignatureYes">
+              Yes
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              type="radio"
+              className="form-check-input"
+              id="needsSignatureNo"
+              name="needs_signature"
+              value={0}
+              required
+              checked={formData.needs_signature === 0}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  needs_signature: parseInt(e.target.value),
+                });
+                setTextHash("");
+              }}
+            />
+            <label className="form-check-label" htmlFor="needsSignatureNo">
+              No
+            </label>
+          </div>
+        </div>
+
+        {formData.needs_signature === 0 && (
+          <div className="form-group mb-3">
+            <label htmlFor="agreementTag">Agreement relates to:</label>
+            <input
+              type="text"
+              id="agreementTag"
+              className="form-control"
+              name="agreement_tag"
+              value={formData.agreement_tag || ""}
+              onChange={handleChange}
+              required={formData.needs_signature === 1}
+              placeholder="Enter a tag for this agreement"
+            />
+          </div>
+        )}
+
         {/* Display hash if available */}
         {textHash && (
           <div className="alert alert-info">
@@ -124,8 +194,6 @@ function CreateAgreement() {
             <code>{textHash}</code>
           </div>
         )}
-
-        
 
         <div className="d-flex justify-content-end mb-3">
           <div id="error-message" className="error" aria-live="polite">
