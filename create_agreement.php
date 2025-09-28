@@ -77,8 +77,8 @@ try {
     // Update SQL to include agreement_tag
     if ($needs_signature == 0 && !empty($agreement_tag)) {
         // Include agreement_tag in the insert when signature is not needed
-        $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature, agreement_tag) 
-                VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature, agreement_tag, created_timestamp) 
+                VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?, ?, NOW())";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new Exception('Failed to prepare agreement insert statement');
