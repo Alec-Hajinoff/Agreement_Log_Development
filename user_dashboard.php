@@ -36,7 +36,7 @@ try {
 
     $id = $_SESSION['id'] ?? null;
 
-    $sql = "SELECT agreement_hash, counter_signed, countersigner_name, countersigned_timestamp, category, agreement_tag, needs_signature 
+    $sql = "SELECT agreement_hash, counter_signed, countersigner_name, countersigned_timestamp, category 
             FROM agreements 
             WHERE user_id = ?";
 
