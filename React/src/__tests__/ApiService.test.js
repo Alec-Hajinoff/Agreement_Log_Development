@@ -151,7 +151,7 @@ describe("ApiService", () => {
 
       await expect(logoutUser()).resolves.not.toThrow();
       expect(global.fetch).toHaveBeenCalledWith(
-        "http://localhost:8001/Climate_Bind_Development/logout_component.php",
+        "http://localhost:8001/Agreement_Log_Development/logout_component.php",
         {
           method: "POST",
           credentials: "include",

@@ -7,7 +7,7 @@ import {
   act,
 } from "@testing-library/react";
 import CreateAgreement from "../CreateAgreement";
-import { createAgreementFunction, userDashboard } from "../ApiService";
+import { createAgreementFunction, userDashboard, agreementHashUserDashboard } from "../ApiService";
 
 jest.mock("../ApiService");
 
@@ -18,13 +18,25 @@ describe("CreateAgreement Component", () => {
     {
       agreement_hash: "hash123",
       counter_signed: false,
+      needs_signature: true,
+      category: "Clients"
     },
     {
       agreement_hash: "hash456",
       counter_signed: true,
+      needs_signature: true,
       countersigner_name: "John Doe",
       countersigned_timestamp: "2025-08-25 10:00:00",
+      category: "Clients"
     },
+    {
+      agreement_hash: "hash789",
+      counter_signed: false,
+      needs_signature: false,
+      agreement_tag: "Test Agreement",
+      created_timestamp: "2025-08-25 10:00:00",
+      category: "Clients"
+    }
   ];
 
   beforeEach(() => {
@@ -39,7 +51,8 @@ describe("CreateAgreement Component", () => {
     render(<CreateAgreement />);
 
     expect(screen.getByLabelText(/Step 1:/)).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Step 2:/)).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Generate hash/i })
     ).toBeInTheDocument();
@@ -52,6 +65,7 @@ describe("CreateAgreement Component", () => {
       expect(screen.getByText("hash123")).toBeInTheDocument();
       expect(screen.getByText("hash456")).toBeInTheDocument();
       expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByText("Test Agreement")).toBeInTheDocument();
     });
   });
 
@@ -75,9 +89,19 @@ describe("CreateAgreement Component", () => {
     render(<CreateAgreement />);
 
     await act(async () => {
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.change(screen.getByLabelText(/Step 2:/), {
         target: { value: "Test agreement text" },
       });
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByDisplayValue("Select a category"), {
+        target: { value: "Clients" },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText(/Yes/));
     });
 
     await act(async () => {
@@ -97,9 +121,19 @@ describe("CreateAgreement Component", () => {
     render(<CreateAgreement />);
 
     await act(async () => {
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.change(screen.getByLabelText(/Step 2:/), {
         target: { value: "Test agreement text" },
       });
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByDisplayValue("Select a category"), {
+        target: { value: "Clients" },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText(/Yes/));
     });
 
     await act(async () => {
@@ -108,6 +142,44 @@ describe("CreateAgreement Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Submission failed/)).toBeInTheDocument();
+    });
+  });
+
+  it("displays agreement text when valid hash is entered", async () => {
+    const mockAgreementText = "Test agreement text";
+    agreementHashUserDashboard.mockResolvedValueOnce({
+      status: "success",
+      agreementText: mockAgreementText,
+    });
+
+    render(<CreateAgreement />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Agreement hash"), {
+        target: { value: "validHash" },
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(mockAgreementText)).toBeInTheDocument();
+    });
+  });
+
+  it("displays error message when invalid hash is entered", async () => {
+    agreementHashUserDashboard.mockResolvedValueOnce({
+      status: "error",
+    });
+
+    render(<CreateAgreement />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Agreement hash"), {
+        target: { value: "invalidHash" },
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Incorrect hash/)).toBeInTheDocument();
     });
   });
 
@@ -121,9 +193,19 @@ describe("CreateAgreement Component", () => {
     render(<CreateAgreement />);
 
     await act(async () => {
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.change(screen.getByLabelText(/Step 2:/), {
         target: { value: "Initial text" },
       });
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByDisplayValue("Select a category"), {
+        target: { value: "Clients" },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText(/Yes/));
     });
 
     await act(async () => {
@@ -135,7 +217,7 @@ describe("CreateAgreement Component", () => {
     });
 
     await act(async () => {
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.change(screen.getByLabelText(/Step 2:/), {
         target: { value: "New text" },
       });
     });
