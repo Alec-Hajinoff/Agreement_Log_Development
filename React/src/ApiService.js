@@ -1,4 +1,4 @@
-//Frontend - backend communication must happen over HTTPS on production
+// Frontend - backend communication must happen over HTTPS on production.
 
 export const registerUser = async (formData) => {
   try {
@@ -136,7 +136,30 @@ export const agreementHashFunction = async (hash) => {
   }
 };
 
-// This code fetches data from the database to populate the user dashboard tables with created and countersigned agreements.
+// When a user enters agreement hash, agreementHashUserDashboard() fetches agreement text from the database.
+
+export const agreementHashUserDashboard = async (hash) => {
+  try {
+    const response = await fetch(
+      "http://localhost:8001/Agreement_Log_Development/agreement_hash_user.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ hash }),
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to verify agreement hash");
+  }
+};
+
+// userDashboard() fetches data from the database to populate the user dashboard tables with created and countersigned agreements.
 
 export const userDashboard = async () => {
   try {
