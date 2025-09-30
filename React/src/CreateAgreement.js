@@ -106,7 +106,7 @@ function CreateAgreement() {
         <p>
           Whether your agreement needs a countersignature or not, the system
           securely logs it. Countersigned agreements are anchored on the
-          blockchain, and agreements that donÔÇÖt need a signature appear in
+          blockchain, and agreements that don't need a signature appear in
           their own dashboard view.
         </p>
       </div>
