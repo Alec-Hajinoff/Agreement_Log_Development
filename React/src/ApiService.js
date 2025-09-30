@@ -120,28 +120,28 @@ export const agreementHashFunction = async (hash) => {
     const response = await fetch(
       "https://agreementlog.com/Agreement_Log_Development/agreement_hash.php",
       {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: "include",
-              body: JSON.stringify({ hash }),
-            }
-          );
-      
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          throw new Error("Failed to verify agreement hash");
-        }
-      };
-      
-      // When a user enters agreement hash, agreementHashUserDashboard() fetches agreement text from the database.
-      
-      export const agreementHashUserDashboard = async (hash) => {
-        try {
-          const response = await fetch(
-            "https://agreementlog.com/Agreement_Log_Development/agreement_hash_user.php",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ hash }),
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to verify agreement hash");
+  }
+};
+
+// When a user enters agreement hash, agreementHashUserDashboard() fetches agreement text from the database.
+
+export const agreementHashUserDashboard = async (hash) => {
+  try {
+    const response = await fetch(
+      "https://agreementlog.com/Agreement_Log_Development/agreement_hash_user.php",
       {
         method: "POST",
         headers: {
