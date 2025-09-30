@@ -1,6 +1,6 @@
 <?php
 
-// This file is the database call to send the agreement text submitted by the user to the database.
+// This file is the database call to send the agreement text submitted by the user to the database, along with other associated data.
 
 require_once 'session_config.php';
 
@@ -46,11 +46,10 @@ $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 $id = $_SESSION['id'] ?? null;
 $agreement_text = $data['agreement_text'] ?? null;
-// Capture and validate the category sent from frontend
 $category = isset($data['category']) ? trim($data['category']) : null;
-// Allow list of valid categories
 $allowedCategories = ['Clients', 'Suppliers', 'Operations', 'HR', 'Marketing', 'Finance', 'Other'];
-
+$needs_signature = $data['needs_signature'] ?? null;
+$agreement_tag = $data['agreement_tag'] ?? null;
 
 if (!$id || !$agreement_text || !$category) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
@@ -63,12 +62,38 @@ if (!in_array($category, $allowedCategories, true)) {
     exit;
 }
 
+// Check if agreement_tag is required but not provided
+if ($needs_signature == 0 && empty($agreement_tag)) {
+    echo json_encode(['success' => false, 'message' => 'Agreement tag is required when signature is not needed']);
+    exit;
+}
+
 try {
     $conn->beginTransaction();
 
-    $agreement_hash = hash('sha256', $agreement_text); // Uses PHP’s built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
+    $agreement_hash = hash('sha256', $agreement_text); // Uses PHP's built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
+    
+    // Update SQL to include agreement_tag
+    if ($needs_signature == 0 && !empty($agreement_tag)) {
+        // Include agreement_tag & created_timestamp in the insert when signature is not needed
+        $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature, agreement_tag, created_timestamp) 
+                VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?, ?, NOW())";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception('Failed to prepare agreement insert statement');
+        }
 
-    $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category) VALUES (AES_ENCRYPT(?, ?), ?, ?, ?)"; // AES_ENCRYPT() is a built-in MySQL function for encrypting.
+        $stmt->bindParam(1, $agreement_text);
+        $stmt->bindParam(2, $encryption_key);
+        $stmt->bindParam(3, $agreement_hash);
+        $stmt->bindParam(4, $id);
+        $stmt->bindParam(5, $category);
+        $stmt->bindParam(6, $needs_signature);
+        $stmt->bindParam(7, $agreement_tag);
+    } else {
+        // Don't include agreement_tag & created_timestamp when signature is needed
+        $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature) 
+                VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception('Failed to prepare agreement insert statement');
@@ -79,6 +104,8 @@ try {
     $stmt->bindParam(3, $agreement_hash);
     $stmt->bindParam(4, $id);
     $stmt->bindParam(5, $category);
+    $stmt->bindParam(6, $needs_signature);
+    }
     
     $stmt->execute();
 
