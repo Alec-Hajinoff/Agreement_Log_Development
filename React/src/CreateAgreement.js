@@ -1,8 +1,9 @@
-// When a user pastes agreement text into the text box - this is the file that is responsible.
+// When a user pastes an agreement text into the text box - this is the file that is responsible. This is a user dashboard essentially.
 
 import React, { useState, useEffect } from "react";
 import "./CreateAgreement.css";
 import LogoutComponent from "./LogoutComponent";
+import { agreementHashUserDashboard } from "./ApiService"; // When a user enters agreement hash, this function fetches agreement text from the database.
 import { createAgreementFunction, userDashboard } from "./ApiService";
 
 function CreateAgreement() {
@@ -10,11 +11,16 @@ function CreateAgreement() {
   const [formData, setFormData] = useState({
     agreement_text: "",
     category: "",
+    needs_signature: 0,
+    agreement_tag: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [agreements, setAgreements] = useState([]);
   const [activeTab, setActiveTab] = useState("Clients");
+  const [activeTabTwo, setActiveTabTwo] = useState("Clients");
+  const [agreementHash, setAgreementHash] = useState("");
+  const [agreementText, setAgreementText] = useState("");
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -56,24 +62,55 @@ function CreateAgreement() {
     }
   };
 
+  const handleHashChange = async (e) => {
+      const hash = e.target.value;
+      setAgreementHash(hash);
+  
+      if (hash.length > 0) {
+        try {
+          const data = await agreementHashUserDashboard(hash); // Checks the hash as the user inserts and when that matches displays the agreement text.
+          if (data.status === "success") {
+            setAgreementText(data.agreementText);
+            setErrorMessage("");
+          } else {
+            setAgreementText("");
+            setErrorMessage(
+              "Incorrect hash, please ask the agreement owner for the correct hash"
+            );
+          }
+        } catch (error) {
+          setErrorMessage(error.message);
+          setAgreementText("");
+        }
+      } else {
+        setAgreementText("");
+        setErrorMessage("");
+      }
+    };
+
   const filteredCountersignedAgreements = agreements
-      .filter((agreement) => agreement.counter_signed)
-      .filter((agreement) => agreement.category === activeTab);
+      .filter(
+      (agreement) => agreement.counter_signed && agreement.needs_signature
+    )
+    .filter((agreement) => agreement.category === activeTab);
+
+  const filteredNonsignedAgreements = agreements
+    .filter(
+      (agreement) => !agreement.counter_signed && !agreement.needs_signature
+    )
+    .filter((agreement) => agreement.category === activeTabTwo);
 
   return (
     <div className="container text-center">
       <div>
         <p>
-          Simply follow the steps below to get your contract countersigned, and
-          the application will log the countersignature and timestamp on the
-          blockchain as independent proof of existence and mutual acceptance.
+          Whether your agreement needs a countersignature or not, the system securely logs it. Countersigned agreements are anchored on the blockchain, and agreements that donÔÇÖt need a signature appear in their own dashboard view.
         </p>
       </div>
       <div className="d-flex justify-content-end mb-3">
         <LogoutComponent />
       </div>
       <form onSubmit={handleSubmit}>
-       {/* Agreement category dropdown */}
               <div className="form-group mb-3">
                 <label htmlFor="agreementCategory">
                   Step 1: Select the category your agreement relates to from the
@@ -102,8 +139,8 @@ function CreateAgreement() {
 
         <div className="form-group mb-3">
           <label htmlFor="agreementText">
-            Step 2: Copy the agreement from your email, paste it into the text
-            box below, and click “Generate hash”.
+            Step 2: Copy the agreement from your email or file, paste it into the text
+            box below, choose if your agreement needs a counter signature, then click 'Generate hash'.
           </label>
           <textarea
             id="agreementText"
@@ -115,11 +152,77 @@ function CreateAgreement() {
             required
           />
         </div>
+        <div className="form-group mb-3">
+                  <label>
+                    Some agreements need a countersignature - like those with clients or
+                    external partners. Others may not - like internal commitments
+                    between colleagues. Does your agreement need to be confirmed by the
+                    other party?
+                  </label>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="needsSignatureYes"
+                      name="needs_signature"
+                      value={1}
+                      required
+                      checked={formData.needs_signature === 1}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          needs_signature: parseInt(e.target.value),
+                        });
+                        setTextHash("");
+                      }}
+                    />
+                    <label className="form-check-label" htmlFor="needsSignatureYes">
+                      Yes
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="needsSignatureNo"
+                      name="needs_signature"
+                      value={0}
+                      required
+                      checked={formData.needs_signature === 0}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          needs_signature: parseInt(e.target.value),
+                        });
+                        setTextHash("");
+                      }}
+                    />
+                    <label className="form-check-label" htmlFor="needsSignatureNo">
+                      No
+                    </label>
+                  </div>
+                </div>
+        
+                {formData.needs_signature === 0 && (
+                  <div className="form-group mb-3">
+                    <label htmlFor="agreementTag">Agreement relates to (this is how you will find it in the dashboard):</label>
+                    <input
+                      type="text"
+                      id="agreementTag"
+                      className="form-control"
+                      name="agreement_tag"
+                      value={formData.agreement_tag || ""}
+                      onChange={handleChange}
+                      required={formData.needs_signature === 1}
+                      placeholder="e.g. Marketing agreement with Mike"
+                    />
+                  </div>
+                )}
 
         {/* Display hash if available */}
         {textHash && (
           <div className="alert alert-info">
-            <strong>Agreement hash:</strong>
+            <strong>Agreement hash. To view this agreement in your dashboard, please refresh the page.</strong>
             <br />
             <code>{textHash}</code>
           </div>
@@ -139,6 +242,8 @@ function CreateAgreement() {
             ></span>
           </button>
         </div>
+
+        {formData.needs_signature === 1 && (
         <div className="form-group mb-3">
           <label>
             Step 3: Copy the agreement hash above and email it to the other
@@ -151,11 +256,12 @@ function CreateAgreement() {
               https://agreementlog.com/CounterSignature
             </a>{" "}
             <br /> Ask them to open the link, enter the agreement hash, review
-            the agreement text, and click “Countersign” if they agree. <br />{" "}
+            the agreement text, and click 'Countersign' if they agree. <br />{" "}
             Once they have countersigned, the agreement will appear as
             countersigned in the table below.
           </label>
         </div>
+        )}
         <div className="form-group mb-3">
         <div className="mt-4">
             <label className="step-label">
@@ -169,7 +275,10 @@ function CreateAgreement() {
               </thead>
               <tbody>
                 {agreements
-                  .filter((agreement) => !agreement.counter_signed)
+                  .filter(
+                    (agreement) =>
+                      !agreement.counter_signed && agreement.needs_signature
+                  )
                   .map((agreement) => (
                     <tr key={agreement.agreement_hash}>
                       <td>{agreement.agreement_hash}</td>
@@ -222,9 +331,82 @@ function CreateAgreement() {
                   ))}
               </tbody>
             </table>
+            <label className="table-label mt-4">
+              Agreements not requiring countersignature
+            </label>
+            {/* Tabs for filtering agreements not needing a signature */}
+            <div className="tabs-container mb-3">
+              <div className="nav nav-tabs">
+                {[
+                  "Clients",
+                  "Suppliers",
+                  "Operations",
+                  "HR",
+                  "Marketing",
+                  "Finance",
+                  "Other",
+                ].map((category) => (
+                  <button
+                    key={category}
+                    className={`nav-link ${
+                      activeTabTwo === category ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTabTwo(category)}
+                    type="button"
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Relating to</th>
+                  <th>Created at</th>
+                  <th>Agreement hash</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredNonsignedAgreements.map((agreement) => (
+                  <tr key={agreement.agreement_hash}>
+                    <td>{agreement.agreement_tag}</td>
+                    <td>{agreement.created_timestamp}</td>
+                    <td>{agreement.agreement_hash}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </form>
+      <div className="form-group row mb-3">
+        <label className="col-sm-4 col-form-label text-end">
+          To view agreement text just enter the agreement hash:
+        </label>
+        <div className="col-sm-8">
+          <input
+            type="text"
+            className="form-control"
+            value={agreementHash}
+            onChange={handleHashChange}
+            placeholder="Agreement hash"
+          />
+        </div>
+      </div>
+
+      {agreementText && (
+        <div className="row justify-content-center mb-4">
+          <div className="col-md-8">
+            <div className="card">
+              <div className="card-body">
+                <label className="card-title">Agreement Text:</label>
+                <p className="card-text">{agreementText}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
