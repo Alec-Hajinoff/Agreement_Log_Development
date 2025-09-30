@@ -72,7 +72,7 @@ try {
     $conn->beginTransaction();
 
     $agreement_hash = hash('sha256', $agreement_text); // Uses PHP's built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
-    
+
     // Update SQL to include agreement_tag
     if ($needs_signature == 0 && !empty($agreement_tag)) {
         // Include agreement_tag & created_timestamp in the insert when signature is not needed
@@ -94,19 +94,19 @@ try {
         // Don't include agreement_tag & created_timestamp when signature is needed
         $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature) 
                 VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception('Failed to prepare agreement insert statement');
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception('Failed to prepare agreement insert statement');
+        }
+
+        $stmt->bindParam(1, $agreement_text);
+        $stmt->bindParam(2, $encryption_key);
+        $stmt->bindParam(3, $agreement_hash);
+        $stmt->bindParam(4, $id);
+        $stmt->bindParam(5, $category);
+        $stmt->bindParam(6, $needs_signature);
     }
 
-    $stmt->bindParam(1, $agreement_text);
-    $stmt->bindParam(2, $encryption_key);
-    $stmt->bindParam(3, $agreement_hash);
-    $stmt->bindParam(4, $id);
-    $stmt->bindParam(5, $category);
-    $stmt->bindParam(6, $needs_signature);
-    }
-    
     $stmt->execute();
 
     $conn->commit();
