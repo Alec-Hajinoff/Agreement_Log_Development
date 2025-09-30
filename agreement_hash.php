@@ -44,6 +44,7 @@ try {
             SELECT AES_DECRYPT(agreement_text, ?) as decrypted_text 
             FROM agreements 
             WHERE agreement_hash = ?
+            AND needs_signature = 1
         ');
         $stmt->execute([$encryption_key, $hash]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
