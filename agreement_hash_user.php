@@ -5,7 +5,8 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "http://localhost:3000"
+    "https://agreementlog.com",
+    "https://www.agreementlog.com"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -29,7 +30,7 @@ $env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption ke
 $encryption_key = $env['ENCRYPTION_KEY'];
 
 try {
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=agreement_log", "root", "");
+    $pdo = new PDO("mysql:host=localhost;port=3306;dbname=agreement_log", "agreement_log_user", "em6JmMah3YCXFXr");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
