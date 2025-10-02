@@ -6,7 +6,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 $allowed_origins = [
-    "http://localhost:3000"
+    "https://agreementlog.com",
+    "https://www.agreementlog.com"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -41,7 +42,7 @@ if (isset($input['email'])) {
         exit;
     }
     try {
-        $pdo = new PDO('mysql:host=localhost;dbname=agreement_log', 'root', '', [
+         $pdo = new PDO("mysql:host=localhost;port=3306;dbname=agreement_log", "agreement_log_user", "em6JmMah3YCXFXr", [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -66,12 +67,12 @@ if (isset($input['email'])) {
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';  // Replace with SMTP host (e.g., smtp.gmail.com)
+                $mail->Host = 'agreementlog.com';  // Replace with SMTP host (e.g., smtp.gmail.com)
                 $mail->SMTPAuth = true;
                 $mail->Username = $username;  // Replace with my actual email
                 $mail->Password = $password;  // Replace with generated app password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
 
                 $mail->setFrom($username, 'Agreement Log');  // Replace with my actual email
                 $mail->addAddress($email);
