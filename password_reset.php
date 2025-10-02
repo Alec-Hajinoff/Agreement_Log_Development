@@ -1,6 +1,6 @@
 <?php
 require_once 'session_config.php';
-require 'vendor/autoload.php';  // Assuming PHPMailer is installed via Composer
+require 'vendor/autoload.php';  // Ensure PHPMailer is installed via Composer
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -42,10 +42,6 @@ if (isset($input['email'])) {
             PDO::ATTR_EMULATE_PREPARES => false
         ]);
 
-        // Add reset_token and token_expiry columns if they don't exist (run once)
-        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(64) NULL");
-        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS token_expiry DATETIME NULL");
-
         $pdo->beginTransaction();
 
         $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
@@ -53,11 +49,11 @@ if (isset($input['email'])) {
         $user = $stmt->fetch();
 
         if ($user) {
-            // Generate secure token and expiry
+            // The below two lines generate secure token and expiry
             $token = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-            // Store token in DB
+            // Store token and expiry in DB
             $updateStmt = $pdo->prepare('UPDATE users SET reset_token = ?, token_expiry = ? WHERE email = ?');
             $updateStmt->execute([$token, $expiry, $email]);
 
@@ -65,19 +61,19 @@ if (isset($input['email'])) {
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
-                $mail->Host = 'smtp.example.com';  // Replace with your SMTP host (e.g., smtp.gmail.com)
+                $mail->Host = 'smtp.gmail.com';  // Replace with SMTP host (e.g., smtp.gmail.com)
                 $mail->SMTPAuth = true;
-                $mail->Username = 'your-email@example.com';  // Replace with your email
-                $mail->Password = 'your-password';  // Replace with your password or app password
+                $mail->Username = 'hajinoff@gmail.com';  // Replace with my actual email
+                $mail->Password = 'dndhulrnexsyfmny';  // Replace with generated app password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
-                $mail->setFrom('your-email@example.com', 'Your App Name');  // Replace
+                $mail->setFrom('hajinoff@gmail.com', 'Agreement Log');  // Replace with my actual email
                 $mail->addAddress($email);
 
                 $mail->isHTML(true);
                 $mail->Subject = 'Password Reset Request';
-                $resetLink = "http://localhost:3000/reset-password?token=$token";  // Dummy URL
+                $resetLink = "http://localhost:3000/reset-password?token=$token";  // Reset URL being send to the user
                 $mail->Body = "Click the link to reset your password: <a href='$resetLink'>$resetLink</a>. This link expires in 1 hour.";
 
                 $mail->send();
