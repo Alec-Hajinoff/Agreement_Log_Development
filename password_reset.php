@@ -79,7 +79,7 @@ if (isset($input['email'])) {
                 $mail->isHTML(true);
                 $mail->Subject = 'Password Reset Request';
                 $resetLink = "http://localhost:3000/reset-password?token=$token";  // Reset URL being send to the user
-                $mail->Body = "Click the link to reset your password: <a href='$resetLink'>$resetLink</a>. This link expires in 1 hour.";
+                $mail->Body = "Click the link to reset your Agreement Log password: <a href='$resetLink'>$resetLink</a>. This link expires in 1 hour.";
 
                 $mail->send();
             } catch (Exception $e) {
