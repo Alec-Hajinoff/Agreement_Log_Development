@@ -19,3 +19,37 @@ body {
 #logo {
   height: 150px;
 }
+
+.forgot-message {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  color: #495057;
+}
+
+.forgot-message.show {
+  opacity: 1;
+}
+
+.forgot-password-link {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.forgot-password-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover:not(.disabled) {
+  text-decoration: underline;
+}
+
+.forgot-password-link a.disabled {
+  color: #6c757d;
+  pointer-events: none;
+}
