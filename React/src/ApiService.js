@@ -180,3 +180,25 @@ export const userDashboard = async () => {
     throw new Error("Failed to fetch dashboard data");
   }
 };
+
+export const passwordReset = async (email) => {
+  try {
+    const response = await fetch(
+      "https://agreementlog.com/Agreement_Log_Development/password_reset.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error("An error occurred.");
+  }
+};
