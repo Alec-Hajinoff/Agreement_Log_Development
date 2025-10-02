@@ -64,7 +64,7 @@ if (isset($input['email'])) {
                 $mail->Host = 'smtp.gmail.com';  // Replace with SMTP host (e.g., smtp.gmail.com)
                 $mail->SMTPAuth = true;
                 $mail->Username = 'hajinoff@gmail.com';  // Replace with my actual email
-                $mail->Password = 'dndhulrnexsyfmny';  // Replace with generated app password
+                $mail->Password = 'zzzzulrnexsyzzzz';  // Replace with generated app password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
