@@ -59,7 +59,7 @@ if (isset($input['email'])) {
         if ($user) {
             // The below two lines generate secure token and expiry
             $token = bin2hex(random_bytes(32));
-            $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+            $expiry = date('Y-m-d H:i:s', strtotime('+2 hours'));
 
             // Store token and expiry in DB
             $updateStmt = $pdo->prepare('UPDATE users SET reset_token = ?, token_expiry = ? WHERE email = ?');
