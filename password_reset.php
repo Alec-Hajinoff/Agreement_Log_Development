@@ -1,4 +1,7 @@
 <?php
+
+// This file checks an email address exists in the database and if so sends a password reset email. 
+
 require_once 'session_config.php';
 require 'vendor/autoload.php';  // Ensure PHPMailer is installed via Composer
 

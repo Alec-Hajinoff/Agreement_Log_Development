@@ -6,6 +6,7 @@ import {
   logoutUser,
   agreementHashFunction,
   userDashboard,
+  passwordReset,
 } from "../ApiService";
 
 describe("ApiService", () => {
@@ -226,6 +227,88 @@ describe("ApiService", () => {
       await expect(userDashboard()).rejects.toThrow(
         "Failed to fetch dashboard data"
       );
+    });
+  });
+
+  describe("passwordReset", () => {
+    // Clear the fetch mock before each test to ensure isolation
+    beforeEach(() => {
+      fetch.mockClear();
+    });
+
+    it("should successfully call passwordReset with valid email and return response data", async () => {
+      // Set up the mock response for a successful API call
+      const mockResponse = {
+        json: jest
+          .fn()
+          .mockResolvedValue({ success: true, message: "Reset email sent" }), // Simulate backend response
+      };
+      fetch.mockResolvedValue(mockResponse); // Mock fetch to resolve with the mock response
+
+      const email = "test@example.com"; // Test input email
+
+      // Call the passwordReset function
+      const result = await passwordReset(email);
+
+      // Verify fetch was called with the correct URL, method, headers, credentials, and body
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/password_reset.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ email }), // Ensure email is stringified correctly
+        }
+      );
+
+      // Check that the function returns the expected data
+      expect(result).toEqual({ success: true, message: "Reset email sent" });
+
+      // Verify response.json() was called once
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw a generic error when fetch fails (e.g., network error)", async () => {
+      // Mock fetch to reject with a network error
+      fetch.mockRejectedValue(new Error("Network error"));
+
+      const email = "test@example.com"; // Test input email
+
+      // Expect the function to throw the generic error message
+      // The function catches any error from fetch and throws "An error occurred."
+      await expect(passwordReset(email)).rejects.toThrow("An error occurred.");
+
+      // Verify fetch was still called with correct parameters despite the error
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/password_reset.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ email }),
+        }
+      );
+    });
+
+    it("should handle non-OK responses (e.g., server error status)", async () => {
+      // Mock a response that represents a server error (e.g., 500 status)
+      const mockResponse = {
+        json: jest.fn().mockRejectedValue(new Error("Invalid JSON")), // Simulate json parsing error
+      };
+      fetch.mockResolvedValue(mockResponse);
+
+      const email = "test@example.com";
+
+      // Expect the function to throw the generic error
+      await expect(passwordReset(email)).rejects.toThrow("An error occurred.");
+
+      // Verify fetch and json were called
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
     });
   });
 });
