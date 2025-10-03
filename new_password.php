@@ -1,9 +1,8 @@
 <?php
 
-// This file validates a password reset token and updates the user's password if valid.
+// This file validates a password reset token and updates the user's password if token and expiry are both valid.
 
 require_once 'session_config.php';
-// Note: PHPMailer not needed here, so removed autoload and use statements
 
 $allowed_origins = [
     "http://localhost:3000"
@@ -48,9 +47,7 @@ if (isset($input['token']) && isset($input['newPassword'])) {
 
         $pdo->beginTransaction();
 
-        // Check if token is valid and not expired
-        // Check if token is valid and not expired
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE reset_token = ? AND NOW() < token_expiry'); // Changed condition to explicitly check current time is earlier than token_expiry for clarity (equivalent to token_expiry > NOW())
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE reset_token = ? AND NOW() < token_expiry');
         $stmt->execute([$token]);
 
         $user = $stmt->fetch();

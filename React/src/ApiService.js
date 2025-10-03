@@ -181,6 +181,8 @@ export const userDashboard = async () => {
   }
 };
 
+// passwordReset() checks if password exists in DB and if so sends out a pasword reset email to user.
+
 export const passwordReset = async (email) => {
   try {
     const response = await fetch(
@@ -208,23 +210,21 @@ export const passwordReset = async (email) => {
 export const updatePassword = async (token, newPassword) => {
   try {
     const response = await fetch(
-      "http://localhost:8001/Agreement_Log_Development/new_password.php", // Updated URL to point to the actual backend PHP script for password update
+      "http://localhost:8001/Agreement_Log_Development/new_password.php",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Included for consistency with other API calls (e.g., session handling)
-        body: JSON.stringify({ token, newPassword }), // Structured payload with token and newPassword
+        credentials: "include",
+        body: JSON.stringify({ token, newPassword }),
       }
     );
 
     const data = await response.json();
-    return data; // Return the response data for handling in the component
+    return data;
   } catch (error) {
     console.error("Error:", error);
-    throw new Error("An error occurred."); // Throw error for component-level handling
+    throw new Error("An error occurred.");
   }
 };
-
-// ... rest of existing code in ApiService.js ...

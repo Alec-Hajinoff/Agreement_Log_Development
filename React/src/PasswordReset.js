@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./PasswordReset.css";
-// Note: Removed imports from ApiService as we're using inline fetch for dummy backend call
 import { updatePassword } from "./ApiService";
 
 function PasswordReset() {
@@ -19,7 +18,7 @@ function PasswordReset() {
   // Check if token is present on component mount
   useEffect(() => {
     if (!token) {
-      setErrorMessage("Invalid reset link. No token provided.");
+      setErrorMessage("Invalid reset link.");
     }
   }, [token]);
 
@@ -34,7 +33,6 @@ function PasswordReset() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (formData.newPassword.length < 8) {
       setErrorMessage("Password must be at least 8 characters long.");
       return;
@@ -48,12 +46,11 @@ function PasswordReset() {
     setErrorMessage(""); // Clear any previous error
 
     try {
-      // Replaced inline fetch with ApiService function call for consistency
-      const data = await updatePassword(token, formData.newPassword); // Updated to use the centralized API function
+      const data = await updatePassword(token, formData.newPassword);
 
       if (data.success) {
         // On success, navigate to home page
-        navigate("/");
+        navigate("/MainRegLog");
       } else {
         setErrorMessage(
           data.message || "Failed to reset password. Please try again."
@@ -69,8 +66,7 @@ function PasswordReset() {
   return (
     <div className="password-reset-container">
       {" "}
-      {/* Added container for better structure */}
-      <h2>Reset Your Password</h2> {/* Added heading for clarity */}
+      <h2>Reset Your Password</h2>
       <form className="row g-2" onSubmit={handleSubmit}>
         <div className="form-group">
           <input
