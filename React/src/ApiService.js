@@ -202,3 +202,29 @@ export const passwordReset = async (email) => {
     throw new Error("An error occurred.");
   }
 };
+
+// updatePassword() handles a password reset after the user clicked on a reset link in their email.
+
+export const updatePassword = async (token, newPassword) => {
+  try {
+    const response = await fetch(
+      "http://localhost:8001/Agreement_Log_Development/new_password.php", // Updated URL to point to the actual backend PHP script for password update
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Included for consistency with other API calls (e.g., session handling)
+        body: JSON.stringify({ token, newPassword }), // Structured payload with token and newPassword
+      }
+    );
+
+    const data = await response.json();
+    return data; // Return the response data for handling in the component
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error("An error occurred."); // Throw error for component-level handling
+  }
+};
+
+// ... rest of existing code in ApiService.js ...

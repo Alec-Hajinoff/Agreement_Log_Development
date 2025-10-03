@@ -2,3 +2,4 @@ Email send error: SMTP Error: Could not connect to SMTP host. Failed to connect 
 Email send error: SMTP Error: Could not authenticate.
 Email send error: SMTP Error: Could not authenticate.
 Email send error: SMTP Error: Could not authenticate.
+Email send error: SMTP Error: Could not authenticate.
