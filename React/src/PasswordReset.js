@@ -48,9 +48,9 @@ function PasswordReset() {
     try {
       const data = await updatePassword(token, formData.newPassword);
 
-      if (data.success) {
+      if (data.status === "success") {
         // On success, navigate to home page
-        navigate("/MainRegLog");
+        navigate("/");
       } else {
         setErrorMessage(
           data.message || "Failed to reset password. Please try again."
@@ -64,9 +64,7 @@ function PasswordReset() {
   };
 
   return (
-    <div className="password-reset-container">
-      {" "}
-      <h2>Reset Your Password</h2>
+    <div className="container text-center col-3">
       <form className="row g-2" onSubmit={handleSubmit}>
         <div className="form-group">
           <input
@@ -74,7 +72,7 @@ function PasswordReset() {
             className="form-control"
             name="newPassword"
             required
-            placeholder="New Password"
+            placeholder="Enter New Password"
             value={formData.newPassword}
             onChange={handleChange}
           />
