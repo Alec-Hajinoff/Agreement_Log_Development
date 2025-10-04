@@ -7,6 +7,7 @@ import {
   agreementHashFunction,
   userDashboard,
   passwordReset,
+  updatePassword,
 } from "../ApiService";
 
 describe("ApiService", () => {
@@ -307,6 +308,84 @@ describe("ApiService", () => {
       await expect(passwordReset(email)).rejects.toThrow("An error occurred.");
 
       // Verify fetch and json were called
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("updatePassword", () => {
+    beforeEach(() => {
+      fetch.mockClear();
+    });
+
+    it("should successfully update password with valid token and password", async () => {
+      const mockResponse = {
+        json: jest.fn().mockResolvedValue({
+          success: true,
+          message: "Password updated successfully",
+        }),
+      };
+      fetch.mockResolvedValue(mockResponse);
+
+      const token = "valid-token-123";
+      const newPassword = "newSecurePassword123";
+      const result = await updatePassword(token, newPassword);
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/new_password.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ token, newPassword }),
+        }
+      );
+
+      expect(result).toEqual({
+        success: true,
+        message: "Password updated successfully",
+      });
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw a generic error when fetch fails", async () => {
+      fetch.mockRejectedValue(new Error("Network error"));
+
+      const token = "valid-token-123";
+      const newPassword = "newSecurePassword123";
+
+      await expect(updatePassword(token, newPassword)).rejects.toThrow(
+        "An error occurred."
+      );
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/new_password.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ token, newPassword }),
+        }
+      );
+    });
+
+    it("should handle non-OK responses", async () => {
+      const mockResponse = {
+        json: jest.fn().mockRejectedValue(new Error("Invalid JSON")),
+      };
+      fetch.mockResolvedValue(mockResponse);
+
+      const token = "valid-token-123";
+      const newPassword = "newSecurePassword123";
+
+      await expect(updatePassword(token, newPassword)).rejects.toThrow(
+        "An error occurred."
+      );
+
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(mockResponse.json).toHaveBeenCalledTimes(1);
     });
