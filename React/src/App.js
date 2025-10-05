@@ -10,6 +10,7 @@ import AccountPage from "./AccountPage";
 import CreateAgreement from "./CreateAgreement";
 import LogoutComponent from "./LogoutComponent";
 import CounterSignature from "./CounterSignature"; // This is the page that does not require sign in and is used by the counter signer
+import PasswordReset from "./PasswordReset";
 
 function App() {
   return (
@@ -21,8 +22,9 @@ function App() {
           <Route path="RegisteredPage" element={<RegisteredPage />} />
           <Route path="AccountPage" element={<AccountPage />} /> 
           <Route path="CreateAgreement" element={<CreateAgreement />} />
-          <Route path="LogoutComponent" component={LogoutComponent} />
+          <Route path="LogoutComponent" element={<LogoutComponent />} />
           <Route path="CounterSignature" element={<CounterSignature />} /> {/*This is the page that does not require sign in and is used by the counter signer*/}
+          <Route path="reset-password" element={<PasswordReset />} />
         </Routes>
         <Footer />
       </Router>
