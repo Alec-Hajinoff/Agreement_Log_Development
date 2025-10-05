@@ -5,7 +5,8 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "http://localhost:3000"
+    "https://agreementlog.com",
+    "https://www.agreementlog.com"
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
