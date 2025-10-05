@@ -181,6 +181,8 @@ export const userDashboard = async () => {
   }
 };
 
+// passwordReset() checks if password exists in DB and if so sends out a pasword reset email to user.
+
 export const passwordReset = async (email) => {
   try {
     const response = await fetch(
@@ -192,6 +194,30 @@ export const passwordReset = async (email) => {
         },
         credentials: "include",
         body: JSON.stringify({ email }),
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error("An error occurred.");
+  }
+};
+
+// updatePassword() handles a password reset after the user clicked on a reset link in their email.
+
+export const updatePassword = async (token, newPassword) => {
+  try {
+    const response = await fetch(
+      "https://agreementlog.com/Agreement_Log_Development/new_password.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ token, newPassword }),
       }
     );
 
