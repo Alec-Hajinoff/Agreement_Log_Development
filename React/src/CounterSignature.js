@@ -42,7 +42,7 @@ function CounterSignature() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await counterSigned(agreementHash, userName); // The user clicks 'Start Policy' and this function sends to the backend a boolean true - the agreement is counter signed.
+      const data = await counterSigned(agreementHash, userName); // The user clicks Countersign and this function sends to the backend a boolean true - the agreement is counter signed.
       if (data.success) {
         setSigned(true);
         setErrorMessage("");
