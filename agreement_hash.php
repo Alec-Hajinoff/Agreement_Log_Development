@@ -56,12 +56,12 @@ try {
                 $decrypted_text = mb_convert_encoding($decrypted_text, 'UTF-8', 'auto');
             }
 
-            // ✅ Normalize to Unicode NFC form for consistent rendering
+            // Normalise to Unicode form for consistent rendering
             if (class_exists('Normalizer')) {
                 $decrypted_text = Normalizer::normalize($decrypted_text, Normalizer::FORM_C);
             }
 
-            // ✅ Return clean UTF-8 JSON without escaping Unicode characters
+            // Return clean UTF-8 JSON without escaping Unicode characters
             echo json_encode([
                 'status' => 'success',
                 'agreementText' => $decrypted_text
