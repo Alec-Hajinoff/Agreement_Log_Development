@@ -1,8 +1,9 @@
 <?php
 
+// This file is the database call to send the agreement text submitted by the user to the database, along with other associated data.
+
 require_once 'session_config.php';
 
-// CORS setup
 $allowed_origins = [
     "http://localhost:3000"
 ];
@@ -24,11 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Load encryption key
-$env = parse_ini_file(__DIR__ . '/.env');
+$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to encrypt the agreement text.
 $encryption_key = $env['ENCRYPTION_KEY'];
 
-// DB connection
 $servername = "127.0.0.1";
 $username = "root";
 $passwordServer = "";
@@ -42,7 +41,6 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
-// Parse incoming JSON
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 $id = $_SESSION['id'] ?? null;
@@ -52,31 +50,30 @@ $allowedCategories = ['Clients', 'Suppliers', 'Operations', 'HR', 'Marketing', '
 $needs_signature = $data['needs_signature'] ?? null;
 $agreement_tag = $data['agreement_tag'] ?? null;
 
-// Validate required fields
 if (!$id || !$agreement_text || !$category) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }
 
-// Validate category
+// Validate category against allow list
 if (!in_array($category, $allowedCategories, true)) {
     echo json_encode(['success' => false, 'message' => 'Invalid category']);
     exit;
 }
 
-// Validate agreement_tag if needed
+// Check if agreement_tag is required but not provided
 if ($needs_signature == 0 && empty($agreement_tag)) {
     echo json_encode(['success' => false, 'message' => 'Agreement tag is required when signature is not needed']);
     exit;
 }
 
-// 🔐 UTF-8 validation and normalization
+// UTF-8 validation and normalisation
 if (!mb_check_encoding($agreement_text, 'UTF-8')) {
     // Convert to UTF-8 if encoding is invalid
     $agreement_text = mb_convert_encoding($agreement_text, 'UTF-8', 'auto');
 }
 
-// Normalize to Unicode NFC form to ensure consistent byte representation
+// Normalise to Unicode to ensure consistent byte representation
 if (class_exists('Normalizer')) {
     $agreement_text = Normalizer::normalize($agreement_text, Normalizer::FORM_C);
 }
@@ -84,10 +81,11 @@ if (class_exists('Normalizer')) {
 try {
     $conn->beginTransaction();
 
-    // Hash the normalized UTF-8 agreement text
-    $agreement_hash = hash('sha256', $agreement_text);
+    $agreement_hash = hash('sha256', $agreement_text); // Uses PHP's built-in hash() function to compute a cryptographic hash using the SHA-256 algorithm.
 
+    // Update SQL to include agreement_tag
     if ($needs_signature == 0 && !empty($agreement_tag)) {
+        // Include agreement_tag & created_timestamp in the insert when signature is not needed
         $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature, agreement_tag, created_timestamp) 
                 VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?, ?, NOW())";
         $stmt = $conn->prepare($sql);
@@ -103,6 +101,7 @@ try {
         $stmt->bindParam(6, $needs_signature);
         $stmt->bindParam(7, $agreement_tag);
     } else {
+        // Don't include agreement_tag & created_timestamp when signature is needed
         $sql = "INSERT INTO agreements (agreement_text, agreement_hash, user_id, category, needs_signature) 
                 VALUES (AES_ENCRYPT(?, ?), ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -119,6 +118,7 @@ try {
     }
 
     $stmt->execute();
+
     $conn->commit();
 
     echo json_encode([

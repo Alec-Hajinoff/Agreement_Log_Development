@@ -10,5 +10,5 @@
   },
   "github.copilot.nextEditSuggestions.enabled": false,
   "github.copilot.editor.enableCodeActions": false,
-  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.enabled": false
 }
