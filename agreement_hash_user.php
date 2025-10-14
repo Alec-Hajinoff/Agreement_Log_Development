@@ -5,7 +5,7 @@
 require_once 'session_config.php';
 
 $allowed_origins = [
-    "http://localhost:3000"
+    'http://localhost:3000'
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -13,23 +13,23 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if (in_array($origin, $allowed_origins)) {
     header("Access-Control-Allow-Origin: $origin");
 } else {
-    header("HTTP/1.1 403 Forbidden");
+    header('HTTP/1.1 403 Forbidden');
     exit;
 }
 
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-$env = parse_ini_file(__DIR__ . '/.env'); // We are picking up the encryption key from .env to dencrypt the agreement text.
+$env = parse_ini_file(__DIR__ . '/.env');  // We are picking up the encryption key from .env to dencrypt the agreement text.
 $encryption_key = $env['ENCRYPTION_KEY'];
 
 try {
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=agreement_log", "root", "");
+    $pdo = new PDO('mysql:host=127.0.0.1;dbname=agreement_log', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
@@ -48,10 +48,23 @@ try {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result && $result['decrypted_text']) {
+            $decrypted_text = $result['decrypted_text'];
+
+            // Ensure the decrypted text is valid UTF-8
+            if (!mb_check_encoding($decrypted_text, 'UTF-8')) {
+                $decrypted_text = mb_convert_encoding($decrypted_text, 'UTF-8', 'auto');
+            }
+
+            // Normalise to Unicode form for consistent rendering
+            if (class_exists('Normalizer')) {
+                $decrypted_text = Normalizer::normalize($decrypted_text, Normalizer::FORM_C);
+            }
+
+            // Return clean UTF-8 JSON without escaping Unicode characters
             echo json_encode([
                 'status' => 'success',
-                'agreementText' => mb_convert_encoding($result['decrypted_text'], 'UTF-8', 'ISO-8859-1')
-            ]);
+                'agreementText' => $decrypted_text
+            ], JSON_UNESCAPED_UNICODE);
         } else {
             echo json_encode([
                 'status' => 'error',
