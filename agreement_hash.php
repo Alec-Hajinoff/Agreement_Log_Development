@@ -50,10 +50,23 @@ try {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result && $result['decrypted_text']) {
+            $decrypted_text = $result['decrypted_text'];
+
+            // Ensure the decrypted text is valid UTF-8
+            if (!mb_check_encoding($decrypted_text, 'UTF-8')) {
+                $decrypted_text = mb_convert_encoding($decrypted_text, 'UTF-8', 'auto');
+            }
+
+            // Normalise to Unicode form for consistent rendering
+            if (class_exists('Normalizer')) {
+                $decrypted_text = Normalizer::normalize($decrypted_text, Normalizer::FORM_C);
+            }
+
+            // Return clean UTF-8 JSON without escaping Unicode characters
             echo json_encode([
                 'status' => 'success',
-                'agreementText' => mb_convert_encoding($result['decrypted_text'], 'UTF-8', 'ISO-8859-1')
-            ]);
+                'agreementText' => $decrypted_text
+            ], JSON_UNESCAPED_UNICODE);
         } else {
             echo json_encode([
                 'status' => 'error',
