@@ -45,6 +45,25 @@ function CounterSignature() {
       const data = await counterSigned(agreementHash, userName); // The user clicks Countersign and this function sends to the backend a boolean true - the agreement is counter signed.
       if (data.success) {
         setSigned(true);
+        // After a successful countersign response from the backend:
+        const { downloadData } = data;
+
+        // Convert the payload into a readable plain-text format
+        const fileContent = JSON.stringify(downloadData, null, 2);
+        const blob = new Blob([fileContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        // Auto-trigger file download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `countersigned-agreement-${downloadData.agreementHash}.txt`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up temporary resources
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
         setErrorMessage("");
       } else {
         setErrorMessage(data.message || "Failed to sign agreement");
@@ -92,7 +111,7 @@ function CounterSignature() {
         <div className="form-group row mb-3">
           <label className="col-sm-4 col-form-label text-end">
             Step 2: If you agree, enter your full name and click Countersign. A
-            PDF copy will then be downloaded to your computer.
+            text file copy will then be downloaded to your computer.
           </label>
           <div className="col-sm-8">
             <input
