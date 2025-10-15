@@ -156,6 +156,7 @@ function CreateAgreement() {
             required
           />
         </div>
+        
         <div className="form-group mb-3">
           <label>
             Some agreements need a countersignature - like those with clients or
@@ -220,7 +221,7 @@ function CreateAgreement() {
               name="agreement_tag"
               value={formData.agreement_tag || ""}
               onChange={handleChange}
-              required={formData.needs_signature === 1}
+              required
               placeholder="e.g. Marketing agreement with Mike"
             />
           </div>
