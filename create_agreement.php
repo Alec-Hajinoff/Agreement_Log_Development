@@ -68,6 +68,17 @@ if ($needs_signature == 0 && empty($agreement_tag)) {
     exit;
 }
 
+// UTF-8 validation and normalisation
+if (!mb_check_encoding($agreement_text, 'UTF-8')) {
+    // Convert to UTF-8 if encoding is invalid
+    $agreement_text = mb_convert_encoding($agreement_text, 'UTF-8', 'auto');
+}
+
+// Normalise to Unicode to ensure consistent byte representation
+if (class_exists('Normalizer')) {
+    $agreement_text = Normalizer::normalize($agreement_text, Normalizer::FORM_C);
+}
+
 try {
     $conn->beginTransaction();
 
