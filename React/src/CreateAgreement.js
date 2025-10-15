@@ -104,7 +104,10 @@ function CreateAgreement() {
     <div className="container text-center">
       <div>
         <p>
-          Whether your agreement needs a countersignature or not, the system securely logs it. Countersigned agreements are anchored on the blockchain, and agreements that don’t need a signature appear in their own dashboard view.
+          Whether your agreement needs a countersignature or not, the system
+          securely logs it. Countersigned agreements are anchored on the
+          blockchain, and agreements that don’t need a signature appear in their
+          own dashboard view.
         </p>
       </div>
       <div className="d-flex justify-content-end mb-3">
@@ -139,8 +142,9 @@ function CreateAgreement() {
 
         <div className="form-group mb-3">
           <label htmlFor="agreementText">
-            Step 2: Copy the agreement from your email or file, paste it into the text
-            box below, choose if your agreement needs a counter signature, then click “Generate hash”.
+            Step 2: Copy the agreement from your email or file, paste it into
+            the text box below, choose if your agreement needs a counter
+            signature, then click “Generate hash”.
           </label>
           <textarea
             id="agreementText"
@@ -206,7 +210,10 @@ function CreateAgreement() {
 
         {formData.needs_signature === 0 && (
           <div className="form-group mb-3">
-            <label htmlFor="agreementTag">Agreement relates to (this is how you will find it in the dashboard):</label>
+            <label htmlFor="agreementTag">
+              Agreement relates to (this is how you will find it in the
+              dashboard):
+            </label>
             <input
               type="text"
               id="agreementTag"
@@ -214,7 +221,7 @@ function CreateAgreement() {
               name="agreement_tag"
               value={formData.agreement_tag || ""}
               onChange={handleChange}
-              required={formData.needs_signature === 1}
+              required
               placeholder="e.g. Marketing agreement with Mike"
             />
           </div>
@@ -223,7 +230,10 @@ function CreateAgreement() {
         {/* Display hash if available */}
         {textHash && (
           <div className="alert alert-info">
-            <strong>Agreement hash. To view this agreement in your dashboard, please refresh the page.</strong>
+            <strong>
+              Agreement hash. To view this agreement in your dashboard, please
+              refresh the page.
+            </strong>
             <br />
             <code>{textHash}</code>
           </div>
