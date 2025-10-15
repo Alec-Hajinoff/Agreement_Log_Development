@@ -32,6 +32,13 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
+    // Fetch AES key so we can decrypt the agreement when responding
+    $env = parse_ini_file(__DIR__ . '/.env');
+    $encryptionKey = $env['ENCRYPTION_KEY'] ?? null;
+    if (!$encryptionKey) {
+        throw new Exception('Encryption key is not configured');
+    }
+
     $data = json_decode(file_get_contents('php://input'), true);
     $hash = $data['hash'] ?? null;
     $userName = $data['userName'] ?? null;
@@ -74,7 +81,52 @@ try {
             exit;
         }
 
-        echo json_encode(['success' => true]);
+        $agreementStmt = $pdo->prepare(
+            'SELECT 
+                agreement_hash,
+                CONVERT(AES_DECRYPT(agreement_text, ?) USING utf8mb4) AS decrypted_text,
+                countersigned_timestamp
+             FROM agreements
+             WHERE agreement_hash = ?'
+        );
+        $agreementStmt->execute([$encryptionKey, $hash]);
+        $agreementRow = $agreementStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$agreementRow) {
+            // Guard against missing data so the frontend doesn't receive an empty payload
+            echo json_encode(['success' => false, 'message' => 'Unable to locate agreement record for download']);
+            exit;
+        }
+
+        $agreementText = $agreementRow['decrypted_text'] ?? '';
+
+        if (!mb_check_encoding($agreementText, 'UTF-8')) {
+            // Keep the same UTF-8 safeguards used on insert
+            $agreementText = mb_convert_encoding($agreementText, 'UTF-8', 'auto');
+        }
+
+        if (class_exists('Normalizer')) {
+            $agreementText = Normalizer::normalize($agreementText, Normalizer::FORM_C);
+        }
+
+        $timestampValue = $agreementRow['countersigned_timestamp'] ?? null;
+        $formattedTimestamp = null;
+
+        if ($timestampValue) {
+            // Format the timestamp so it renders nicely inside the PDF
+            $countersignedAt = new DateTime($timestampValue);
+            $formattedTimestamp = $countersignedAt->format('Y-m-d H:i:s');
+        }
+
+        echo json_encode([
+            'success' => true,
+            'blockchainResponse' => json_decode($response, true) ?? $response,
+            'downloadData' => [
+                'agreementHash' => $agreementRow['agreement_hash'],
+                'agreementText' => $agreementText,
+                'countersignedTimestamp' => $formattedTimestamp
+            ]
+        ]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Agreement not found or already signed']);
     }
