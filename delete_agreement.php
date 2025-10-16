@@ -1,6 +1,6 @@
 <?php
 
-// When a user enters agreement hash in the UI, this file fetches agreement text from the database and sends it to agreementHashUserDashboard().
+// This file handles the deletion of agreements from the database.
 
 require_once 'session_config.php';
 
@@ -26,63 +26,68 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-$env = parse_ini_file(__DIR__ . '/.env');  // We are picking up the encryption key from .env to dencrypt the agreement text.
-$encryption_key = $env['ENCRYPTION_KEY'];
 
 try {
     $pdo = new PDO('mysql:host=localhost;port=3306;dbname=agreement_log', 'agreement_log_user', 'em6JmMah3YCXFXr');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-
-    $data = json_decode(file_get_contents('php://input'), true);
-    $hash = $data['hash'] ?? '';
-
-    // The AES_DECRYPT() in the if statement below is a built-in MySQL function for decrypting.
-
-    if ($hash) {
-        $stmt = $pdo->prepare('
-            SELECT AES_DECRYPT(agreement_text, ?) as decrypted_text 
-            FROM agreements 
-            WHERE agreement_hash = ?
-        ');
-        $stmt->execute([$encryption_key, $hash]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($result && $result['decrypted_text']) {
-            $decrypted_text = $result['decrypted_text'];
-
-            // Ensure the decrypted text is valid UTF-8
-            if (!mb_check_encoding($decrypted_text, 'UTF-8')) {
-                $decrypted_text = mb_convert_encoding($decrypted_text, 'UTF-8', 'auto');
-            }
-
-            // Normalise to Unicode form for consistent rendering
-            if (class_exists('Normalizer')) {
-                $decrypted_text = Normalizer::normalize($decrypted_text, Normalizer::FORM_C);
-            }
-
-            // Return clean UTF-8 JSON without escaping Unicode characters
-            echo json_encode([
-                'status' => 'success',
-                'agreementText' => $decrypted_text
-            ], JSON_UNESCAPED_UNICODE);
-        } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Agreement not found'
-            ]);
-        }
-    } else {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Hash is required'
-        ]);
-    }
 } catch (PDOException $e) {
+    die('Connection failed: ' . $e->getMessage());
+}
+
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+$hash = $data['hash'] ?? null;
+$id = $_SESSION['id'] ?? null;
+
+if (!$hash || !$id) {
+    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+    exit;
+}
+
+try {
+    $conn->beginTransaction();
+
+    // First verify the agreement belongs to the user
+    $check_sql = 'SELECT user_id FROM agreements WHERE agreement_hash = ?';
+    $check_stmt = $conn->prepare($check_sql);
+    if (!$check_stmt) {
+        throw new Exception('Failed to prepare check statement');
+    }
+
+    $check_stmt->bindParam(1, $hash);
+    $check_stmt->execute();
+    $result = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$result || $result['user_id'] != $id) {
+        echo json_encode(['success' => false, 'message' => 'Agreement not found or access denied']);
+        exit;
+    }
+
+    // Delete the agreement
+    $delete_sql = 'DELETE FROM agreements WHERE agreement_hash = ? AND user_id = ?';
+    $delete_stmt = $conn->prepare($delete_sql);
+    if (!$delete_stmt) {
+        throw new Exception('Failed to prepare delete statement');
+    }
+
+    $delete_stmt->bindParam(1, $hash);
+    $delete_stmt->bindParam(2, $id);
+    $delete_stmt->execute();
+
+    if ($delete_stmt->rowCount() == 0) {
+        throw new Exception('No agreement was deleted');
+    }
+
+    $conn->commit();
+
     echo json_encode([
-        'status' => 'error',
-        'message' => 'Database error: ' . $e->getMessage()
+        'success' => true,
+        'message' => 'Agreement deleted successfully'
     ]);
+} catch (Exception $e) {
+    $conn->rollBack();
+    echo json_encode(['success' => false, 'message' => 'Transaction failed: ' . $e->getMessage()]);
 } finally {
-    $pdo = null;
+    $conn = null;
 }
