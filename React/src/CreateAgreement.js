@@ -3,8 +3,12 @@
 import React, { useState, useEffect } from "react";
 import "./CreateAgreement.css";
 import LogoutComponent from "./LogoutComponent";
-import { agreementHashUserDashboard } from "./ApiService"; // When a user enters agreement hash, this function fetches agreement text from the database.
-import { createAgreementFunction, userDashboard } from "./ApiService";
+import {
+  agreementHashUserDashboard,
+  deleteAgreementFunction,
+  createAgreementFunction,
+  userDashboard,
+} from "./ApiService";
 
 function CreateAgreement() {
   const [textHash, setTextHash] = useState("");
@@ -21,6 +25,8 @@ function CreateAgreement() {
   const [activeTabTwo, setActiveTabTwo] = useState("Clients");
   const [agreementHash, setAgreementHash] = useState("");
   const [agreementText, setAgreementText] = useState("");
+  const [deletingHash, setDeletingHash] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -99,6 +105,33 @@ function CreateAgreement() {
       (agreement) => !agreement.counter_signed && !agreement.needs_signature
     )
     .filter((agreement) => agreement.category === activeTabTwo);
+
+    const handleDeleteClick = (hash) => {
+        setDeletingHash(hash);
+        setShowDeleteModal(true);
+      };
+    
+      const confirmDelete = async () => {
+        try {
+          const data = await deleteAgreementFunction(deletingHash); // Makes the PHP call to delete an agreement.
+          if (data.success) {
+            // Remove the deleted agreement from the state
+            setAgreements((prevAgreements) =>
+              prevAgreements.filter(
+                (agreement) => agreement.agreement_hash !== deletingHash
+              )
+            );
+            setErrorMessage("");
+          } else {
+            setErrorMessage("Failed to delete agreement. Please try again.");
+          }
+        } catch (error) {
+          setErrorMessage(error.message);
+        } finally {
+          setShowDeleteModal(false);
+          setDeletingHash(null);
+        }
+      };
 
   return (
     <div className="container text-center">
@@ -282,6 +315,7 @@ function CreateAgreement() {
               <thead>
                 <tr>
                   <th>Agreement hash</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -293,6 +327,16 @@ function CreateAgreement() {
                   .map((agreement) => (
                     <tr key={agreement.agreement_hash}>
                       <td>{agreement.agreement_hash}</td>
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() =>
+                            handleDeleteClick(agreement.agreement_hash)
+                          }
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
               </tbody>
@@ -376,6 +420,7 @@ function CreateAgreement() {
                   <th>Relating to</th>
                   <th>Created at</th>
                   <th>Agreement hash</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -384,10 +429,64 @@ function CreateAgreement() {
                     <td>{agreement.agreement_tag}</td>
                     <td>{agreement.created_timestamp}</td>
                     <td>{agreement.agreement_hash}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          handleDeleteClick(agreement.agreement_hash)
+                        }
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {showDeleteModal && (
+                          <div
+                            className="modal"
+                            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+                            onClick={() => setShowDeleteModal(false)}
+                          >
+                            <div
+                              className="modal-dialog"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5 className="modal-title">Confirm Deletion</h5>
+                                  <button
+                                    type="button"
+                                    className="close"
+                                    onClick={() => setShowDeleteModal(false)}
+                                  >
+                                    <span>&times;</span>
+                                  </button>
+                                </div>
+                                <div className="modal-body">
+                                  <p>Are you sure you want to delete this agreement?</p>
+                                </div>
+                                <div className="modal-footer">
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowDeleteModal(false)}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={confirmDelete}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
           </div>
         </div>
       </form>
