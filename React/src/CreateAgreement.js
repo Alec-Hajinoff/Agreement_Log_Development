@@ -106,32 +106,32 @@ function CreateAgreement() {
     )
     .filter((agreement) => agreement.category === activeTabTwo);
 
-    const handleDeleteClick = (hash) => {
-        setDeletingHash(hash);
-        setShowDeleteModal(true);
-      };
-    
-      const confirmDelete = async () => {
-        try {
-          const data = await deleteAgreementFunction(deletingHash); // Makes the PHP call to delete an agreement.
-          if (data.success) {
-            // Remove the deleted agreement from the state
-            setAgreements((prevAgreements) =>
-              prevAgreements.filter(
-                (agreement) => agreement.agreement_hash !== deletingHash
-              )
-            );
-            setErrorMessage("");
-          } else {
-            setErrorMessage("Failed to delete agreement. Please try again.");
-          }
-        } catch (error) {
-          setErrorMessage(error.message);
-        } finally {
-          setShowDeleteModal(false);
-          setDeletingHash(null);
-        }
-      };
+  const handleDeleteClick = (hash) => {
+    setDeletingHash(hash);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const data = await deleteAgreementFunction(deletingHash); // Makes the PHP call to delete an agreement.
+      if (data.success) {
+        // Remove the deleted agreement from the state
+        setAgreements((prevAgreements) =>
+          prevAgreements.filter(
+            (agreement) => agreement.agreement_hash !== deletingHash
+          )
+        );
+        setErrorMessage("");
+      } else {
+        setErrorMessage("Failed to delete agreement. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingHash(null);
+    }
+  };
 
   return (
     <div className="container text-center">
@@ -139,8 +139,8 @@ function CreateAgreement() {
         <p>
           Whether your agreement needs a countersignature or not, the system
           securely logs it. Countersigned agreements are anchored on the
-          blockchain, and agreements that don't need a signature appear in
-          their own dashboard view.
+          blockchain, and agreements that don't need a signature appear in their
+          own dashboard view.
         </p>
       </div>
       <div className="d-flex justify-content-end mb-3">
@@ -189,7 +189,7 @@ function CreateAgreement() {
             required
           />
         </div>
-        
+
         <div className="form-group mb-3">
           <label>
             Some agreements need a countersignature - like those with clients or
@@ -444,49 +444,49 @@ function CreateAgreement() {
               </tbody>
             </table>
             {showDeleteModal && (
-                          <div
-                            className="modal"
-                            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
-                            onClick={() => setShowDeleteModal(false)}
-                          >
-                            <div
-                              className="modal-dialog"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div className="modal-content">
-                                <div className="modal-header">
-                                  <h5 className="modal-title">Confirm Deletion</h5>
-                                  <button
-                                    type="button"
-                                    className="close"
-                                    onClick={() => setShowDeleteModal(false)}
-                                  >
-                                    <span>&times;</span>
-                                  </button>
-                                </div>
-                                <div className="modal-body">
-                                  <p>Are you sure you want to delete this agreement?</p>
-                                </div>
-                                <div className="modal-footer">
-                                  <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowDeleteModal(false)}
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                    onClick={confirmDelete}
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+              <div
+                className="modal"
+                style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+                onClick={() => setShowDeleteModal(false)}
+              >
+                <div
+                  className="modal-dialog"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Confirm Deletion</h5>
+                      <button
+                        type="button"
+                        className="close"
+                        onClick={() => setShowDeleteModal(false)}
+                      >
+                        <span>&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      <p>Are you sure you want to delete this agreement?</p>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => setShowDeleteModal(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={confirmDelete}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </form>
