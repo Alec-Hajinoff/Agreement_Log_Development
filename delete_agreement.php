@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-
 try {
     $pdo = new PDO('mysql:host=localhost;port=3306;dbname=agreement_log', 'agreement_log_user', 'em6JmMah3YCXFXr');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
