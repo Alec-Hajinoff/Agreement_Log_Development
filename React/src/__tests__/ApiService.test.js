@@ -8,6 +8,7 @@ import {
   userDashboard,
   passwordReset,
   updatePassword,
+  deleteAgreementFunction,
 } from "../ApiService";
 
 describe("ApiService", () => {
@@ -384,6 +385,81 @@ describe("ApiService", () => {
 
       await expect(updatePassword(token, newPassword)).rejects.toThrow(
         "An error occurred."
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("deleteAgreementFunction", () => {
+    beforeEach(() => {
+      fetch.mockClear();
+    });
+
+    it("should successfully delete agreement with valid hash", async () => {
+      const mockResponse = {
+        json: jest.fn().mockResolvedValue({
+          success: true,
+          message: "Agreement deleted successfully",
+        }),
+      };
+      fetch.mockResolvedValue(mockResponse);
+
+      const hash = "abc123";
+      const result = await deleteAgreementFunction(hash);
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/delete_agreement.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ hash }),
+        }
+      );
+
+      expect(result).toEqual({
+        success: true,
+        message: "Agreement deleted successfully",
+      });
+      expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error when fetch fails", async () => {
+      fetch.mockRejectedValue(new Error("Network error"));
+
+      const hash = "abc123";
+
+      await expect(deleteAgreementFunction(hash)).rejects.toThrow(
+        "Failed to delete agreement"
+      );
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://localhost:8001/Agreement_Log_Development/delete_agreement.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ hash }),
+        }
+      );
+    });
+
+    it("should handle non-OK responses", async () => {
+      const mockResponse = {
+        json: jest.fn().mockRejectedValue(new Error("Invalid JSON")),
+      };
+      fetch.mockResolvedValue(mockResponse);
+
+      const hash = "abc123";
+
+      await expect(deleteAgreementFunction(hash)).rejects.toThrow(
+        "Failed to delete agreement"
       );
 
       expect(fetch).toHaveBeenCalledTimes(1);

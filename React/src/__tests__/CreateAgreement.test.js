@@ -7,11 +7,24 @@ import {
   act,
 } from "@testing-library/react";
 import CreateAgreement from "../CreateAgreement";
-import { createAgreementFunction, userDashboard, agreementHashUserDashboard } from "../ApiService";
+import {
+  createAgreementFunction,
+  userDashboard,
+  agreementHashUserDashboard,
+  deleteAgreementFunction,
+} from "../ApiService";
 
 jest.mock("../ApiService");
 
 jest.mock("../LogoutComponent", () => () => <button>Logout</button>);
+
+jest.mock("../ApiService", () => ({
+  ...jest.requireActual("../ApiService"),
+  createAgreementFunction: jest.fn(),
+  userDashboard: jest.fn(),
+  agreementHashUserDashboard: jest.fn(),
+  deleteAgreementFunction: jest.fn(), // Add this line
+}));
 
 describe("CreateAgreement Component", () => {
   const mockAgreements = [
@@ -19,7 +32,7 @@ describe("CreateAgreement Component", () => {
       agreement_hash: "hash123",
       counter_signed: false,
       needs_signature: true,
-      category: "Clients"
+      category: "Clients",
     },
     {
       agreement_hash: "hash456",
@@ -27,7 +40,7 @@ describe("CreateAgreement Component", () => {
       needs_signature: true,
       countersigner_name: "John Doe",
       countersigned_timestamp: "2025-08-25 10:00:00",
-      category: "Clients"
+      category: "Clients",
     },
     {
       agreement_hash: "hash789",
@@ -35,8 +48,8 @@ describe("CreateAgreement Component", () => {
       needs_signature: false,
       agreement_tag: "Test Agreement",
       created_timestamp: "2025-08-25 10:00:00",
-      category: "Clients"
-    }
+      category: "Clients",
+    },
   ];
 
   beforeEach(() => {
@@ -223,5 +236,123 @@ describe("CreateAgreement Component", () => {
     });
 
     expect(screen.queryByText(mockHash)).not.toBeInTheDocument();
+  });
+  describe("Delete Agreement Functionality", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      userDashboard.mockResolvedValue({
+        success: true,
+        agreements: mockAgreements,
+      });
+    });
+
+    it("should show delete confirmation modal when delete button is clicked", async () => {
+      render(<CreateAgreement />);
+
+      await waitFor(() => {
+        expect(screen.getByText("hash123")).toBeInTheDocument();
+      });
+
+      const deleteButton = screen.getAllByText("Delete")[0];
+      fireEvent.click(deleteButton);
+
+      expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
+      expect(
+        screen.getByText("Are you sure you want to delete this agreement?")
+      ).toBeInTheDocument();
+    });
+
+    it("should successfully delete agreement when confirmed", async () => {
+      deleteAgreementFunction.mockResolvedValueOnce({
+        success: true,
+      });
+
+      render(<CreateAgreement />);
+
+      await waitFor(() => {
+        expect(screen.getByText("hash123")).toBeInTheDocument();
+      });
+
+      const deleteButton = screen.getAllByText("Delete")[0];
+      await act(async () => {
+        fireEvent.click(deleteButton);
+      });
+
+      const confirmButton = screen.getByText("Delete", {
+        selector: ".modal-footer button",
+      });
+      await act(async () => {
+        fireEvent.click(confirmButton);
+      });
+
+      await waitFor(() => {
+        expect(deleteAgreementFunction).toHaveBeenCalledWith("hash123");
+        expect(screen.queryByText("hash123")).not.toBeInTheDocument();
+      });
+    });
+
+    it("should handle delete agreement error", async () => {
+      deleteAgreementFunction.mockRejectedValueOnce(
+        new Error("Failed to delete agreement")
+      );
+
+      render(<CreateAgreement />);
+
+      await waitFor(() => {
+        expect(screen.getByText("hash123")).toBeInTheDocument();
+      });
+
+      // Get the first delete button (from the table row)
+      const deleteButton = screen.getAllByText("Delete")[0];
+      await act(async () => {
+        fireEvent.click(deleteButton);
+      });
+
+      // Get the delete button from the modal footer specifically
+      const confirmButton = screen.getByText("Delete", {
+        selector: ".modal-footer button",
+      });
+      await act(async () => {
+        fireEvent.click(confirmButton);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to delete agreement")
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("should close modal when cancel is clicked", async () => {
+      render(<CreateAgreement />);
+
+      await waitFor(() => {
+        expect(screen.getByText("hash123")).toBeInTheDocument();
+      });
+
+      const deleteButton = screen.getAllByText("Delete")[0];
+      fireEvent.click(deleteButton);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryByText("Confirm Deletion")).not.toBeInTheDocument();
+    });
+
+    it("should close modal when clicking outside", async () => {
+      render(<CreateAgreement />);
+
+      await waitFor(() => {
+        expect(screen.getByText("hash123")).toBeInTheDocument();
+      });
+
+      const deleteButton = screen.getAllByText("Delete")[0];
+      fireEvent.click(deleteButton);
+
+      const modal = screen.getByText("Confirm Deletion").closest(".modal");
+      fireEvent.click(modal);
+
+      expect(screen.queryByText("Confirm Deletion")).not.toBeInTheDocument();
+    });
   });
 });
