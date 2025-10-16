@@ -228,3 +228,25 @@ export const updatePassword = async (token, newPassword) => {
     throw new Error("An error occurred.");
   }
 };
+
+// deleteAgreementFunction() is a backend call to delete agreements.
+
+export const deleteAgreementFunction = async (hash) => {
+  try {
+    const response = await fetch(
+      "https://agreementlog.com/Agreement_Log_Development/delete_agreement.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ hash }),
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to delete agreement");
+  }
+};
