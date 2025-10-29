@@ -19,10 +19,16 @@ function App() {
         <Routes>
           <Route path="/" element={<MainRegLog />} />
           <Route path="RegisteredPage" element={<RegisteredPage />} />
-          <Route path="AccountPage" element={<AccountPage />} /> 
+          <Route path="AccountPage" element={<AccountPage />} />
           <Route path="CreateAgreement" element={<CreateAgreement />} />
           <Route path="LogoutComponent" element={<LogoutComponent />} />
-          <Route path="CounterSignature" element={<CounterSignature />} /> {/*This is the page that does not require sign in and is used by the counter signer*/}
+          <Route path="CounterSignature" element={<CounterSignature />} />{" "}
+          {/*This is the page that does not require sign in and is used by the counter signer*/}
+          <Route
+            path="/CounterSignature/:hash"
+            element={<CounterSignature />}
+          />{" "}
+          {/*This is the page that does not require sign in and is used by the counter signer*/}
           <Route path="reset-password" element={<PasswordReset />} />
         </Routes>
         <Footer />

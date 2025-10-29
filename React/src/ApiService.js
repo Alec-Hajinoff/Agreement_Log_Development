@@ -113,7 +113,7 @@ export const logoutUser = async () => {
   }
 };
 
-// agreementHashFunction() checks the hash in the database, as the user types it, and when that matches displays the agreement text.
+// agreementHashFunction() fetches the agreement text from the backend using the hash extracted from the URL. This allows the countersigner to view the agreement immediately upon visiting the link.
 
 export const agreementHashFunction = async (hash) => {
   try {
