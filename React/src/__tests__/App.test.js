@@ -37,7 +37,7 @@ describe("App", () => {
     render(
       <MemoryRouter initialEntries={initialEntries}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
   it("renders Header and Footer on all routes", () => {
@@ -73,6 +73,11 @@ describe("App", () => {
 
   it("renders CounterSignature component on /CounterSignature", () => {
     renderWithRouter(["/CounterSignature"]);
+    expect(screen.getByTestId("counter-signature")).toBeInTheDocument();
+  });
+
+  it("renders CounterSignature component on /CounterSignature/:hash", () => {
+    renderWithRouter(["/CounterSignature/abc123"]);
     expect(screen.getByTestId("counter-signature")).toBeInTheDocument();
   });
 
