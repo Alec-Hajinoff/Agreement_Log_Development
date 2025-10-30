@@ -1,4 +1,3 @@
-//import logo from './logo.svg';
 import React from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -23,7 +22,13 @@ function App() {
           <Route path="AccountPage" element={<AccountPage />} /> 
           <Route path="CreateAgreement" element={<CreateAgreement />} />
           <Route path="LogoutComponent" element={<LogoutComponent />} />
-          <Route path="CounterSignature" element={<CounterSignature />} /> {/*This is the page that does not require sign in and is used by the counter signer*/}
+          <Route path="CounterSignature" element={<CounterSignature />} />{" "}
+          {/*This is the page that does not require sign in and is used by the counter signer*/}
+          <Route
+            path="/CounterSignature/:hash"
+            element={<CounterSignature />}
+          />{" "}
+          {/*This is the page that does not require sign in and is used by the counter signer*/}
           <Route path="reset-password" element={<PasswordReset />} />
         </Routes>
         <Footer />
