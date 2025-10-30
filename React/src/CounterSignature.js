@@ -1,8 +1,9 @@
-// This is the file that allows a counter party to view and to counter signs the agreement.
+// This is the file that allows a counter party to view and to counter sign the agreement.
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CounterSignature.css";
 import { counterSigned, agreementHashFunction } from "./ApiService";
+import { useParams } from "react-router-dom";
 
 function CounterSignature() {
   const [agreementHash, setAgreementHash] = useState("");
@@ -11,32 +12,29 @@ function CounterSignature() {
   const [loading, setLoading] = useState(false);
   const [signed, setSigned] = useState(false);
   const [userName, setUserName] = useState("");
+  const { hash } = useParams(); // from /CounterSignature/:hash
 
-  const handleHashChange = async (e) => {
-    const hash = e.target.value;
-    setAgreementHash(hash);
-
-    if (hash.length > 0) {
-      try {
-        const data = await agreementHashFunction(hash); // Checks the hash as the user types and when that matches displays the agreement text.
-        if (data.status === "success") {
-          setAgreementText(data.agreementText);
-          setErrorMessage("");
-        } else {
+  useEffect(() => {
+    const fetchAgreement = async () => {
+      if (hash) {
+        try {
+          const data = await agreementHashFunction(hash); // agreementHashFunction() fetches the agreement text from the backend using the hash extracted from the URL. This allows the countersigner to view the agreement immediately upon visiting the link.
+          if (data.status === "success") {
+            setAgreementText(data.agreementText);
+            setAgreementHash(hash); // Still needed for the countersign.
+            setErrorMessage("");
+          } else {
+            setAgreementText("");
+            setErrorMessage("Agreement not found. Please check the link.");
+          }
+        } catch (error) {
           setAgreementText("");
-          setErrorMessage(
-            "Incorrect hash, please ask the agreement owner for the correct hash"
-          );
+          setErrorMessage("Error loading agreement.");
         }
-      } catch (error) {
-        setErrorMessage(error.message);
-        setAgreementText("");
       }
-    } else {
-      setAgreementText("");
-      setErrorMessage("");
-    }
-  };
+    };
+    fetchAgreement();
+  }, [hash]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,19 +78,10 @@ function CounterSignature() {
       <p>To countersign an agreement, please follow the steps below.</p>
       <form onSubmit={handleSubmit}>
         <div className="form-group row mb-3">
-          <label className="col-sm-4 col-form-label text-end">
-            Step 1: Please enter the agreement hash. The agreement text will
-            appear below.
+          <label className="col-sm-12">
+            Step 1: This agreement was loaded automatically from the link you
+            received. Please review the text below.
           </label>
-          <div className="col-sm-8">
-            <input
-              type="text"
-              className="form-control"
-              value={agreementHash}
-              onChange={handleHashChange}
-              placeholder="Agreement hash"
-            />
-          </div>
         </div>
 
         {agreementText && (
