@@ -27,6 +27,7 @@ function CreateAgreement() {
   const [agreementText, setAgreementText] = useState("");
   const [deletingHash, setDeletingHash] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [countersignLink, setCountersignLink] = useState("");
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -58,6 +59,9 @@ function CreateAgreement() {
       const data = await createAgreementFunction(formData); // The API call to send the agreement text submitted by the user to the backend.
       if (data.success) {
         setTextHash(data.hash);
+        setCountersignLink(
+          `https://agreementlog.com/CounterSignature/${data.hash}` // Add hash to create a countersignature link to display agreement text to countersigner.
+        );
       } else {
         setErrorMessage("Submission failed. Please try again.");
       }
@@ -260,18 +264,6 @@ function CreateAgreement() {
           </div>
         )}
 
-        {/* Display hash if available */}
-        {textHash && (
-          <div className="alert alert-info">
-            <strong>
-              Agreement hash. To view this agreement in your dashboard, please
-              refresh the page.
-            </strong>
-            <br />
-            <code>{textHash}</code>
-          </div>
-        )}
-
         <div className="d-flex justify-content-end mb-3">
           <div id="error-message" className="error" aria-live="polite">
             {errorMessage}
@@ -287,25 +279,34 @@ function CreateAgreement() {
           </button>
         </div>
 
-        {formData.needs_signature === 1 && (
-          <div className="form-group mb-3">
-            <label>
-              Step 3: Copy the agreement hash above and email it to the other
-              party together with this link:{" "}
-              <a
-                href="https://agreementlog.com/CounterSignature"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                https://agreementlog.com/CounterSignature
-              </a>{" "}
-              <br /> Ask them to open the link, enter the agreement hash, review
-              the agreement text, and click 'Countersign' if they agree. <br />{" "}
-              Once they have countersigned, the agreement will appear as
-              countersigned in the table below.
-            </label>
+         {/* Display the countersign link */}
+        {textHash && (
+          <div className="alert alert-info">
+            {formData.needs_signature === 1 && countersignLink && (
+              <>
+                Step 3: Share this link with the counterparty to countersign:
+                <br />
+                <a
+                  href={countersignLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {countersignLink}
+                </a>
+                <br />
+                <br />
+                Ask them to open the link, review the agreement text, and click
+                "Countersign" if they agree. Once they have countersigned, the
+                agreement will appear as countersigned in the table below.
+                <br />
+                <br />
+                To view this agreement in your dashboard below, please refresh
+                the page.
+              </>
+            )}
           </div>
         )}
+        
         <div className="form-group mb-3">
           <div className="mt-4">
             <label className="step-label">
